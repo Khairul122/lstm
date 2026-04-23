@@ -28,9 +28,11 @@ final class HomeController extends Controller
             'username' => (string) Session::get('username', 'Guest'),
             'role' => (string) Session::get('role', '-'),
             'komoditasTotal' => Komoditas::totalCount(),
+            'komoditasList' => Komoditas::allOptions(),
             'stokSummary' => StokHistoris::dashboardSummary(),
             'forecastSummary' => $forecastSummary,
             'forecastTable' => $forecastTable,
+            'batchStats' => LstmBatchRun::summaryStats(),
         ]);
     }
 }
