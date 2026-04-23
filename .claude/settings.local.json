@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(php *)"
+      "Bash(php *)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(cp \"C:/Users/USER/.claude/projects/C--laragon-www-LSTM/bf1ec0ee-3e3e-413d-a696-e1a20a6b9120/tool-results/webfetch-1776950716170-fmpmrt.bin\" /tmp/design.gz)",
+      "Bash(gunzip -f /tmp/design.gz)",
+      "Read(//tmp/**)",
+      "Bash(ls -lh /tmp/design*)",
+      "Bash(tar -tf /tmp/design_extracted.tar)",
+      "Bash(tar -xf /tmp/design_extracted.tar -C /tmp/)",
+      "Read(//c/Users/USER/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/**)",
+      "Bash(python skills/ui-ux-pro-max/scripts/search.py \"government data science forecasting dashboard navy professional\" --design-system -p \"Stok Pangan Lhokseumawe\")",
+      "Bash(python src/ui-ux-pro-max/scripts/search.py \"government data science forecasting dashboard navy professional\" --design-system -p \"Stok Pangan Lhokseumawe\")",
+      "Bash(python src/ui-ux-pro-max/scripts/search.py \"hero section government dashboard landing\" --domain landing -n 5)"
     ]
   }
 }
