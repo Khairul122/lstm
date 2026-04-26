@@ -908,10 +908,6 @@ $mascotSectionTips = [
         <div class="hero-dot-grid absolute inset-0 z-[11] opacity-60 pointer-events-none"></div>
         <div class="relative z-20 mx-auto grid w-full max-w-screen-2xl grid-cols-1 gap-12 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:py-28">
             <div class="reveal lg:col-span-7">
-                <div class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary shadow-sm backdrop-blur-sm">
-                    <span class="badge-live-dot h-2.5 w-2.5 rounded-full bg-secondary"></span>
-                    Live · Batch <?= e((string) ($latestBatch['batch_code'] ?? '—')) ?> · <?= e($batchStatusLabel) ?>
-                </div>
                 <h1 class="mb-6 text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-primary sm:text-5xl lg:text-[4rem]">
                     Forecasting Stok Pangan <span class="text-secondary">Cerdas</span><br class="hidden lg:block"> untuk Ketahanan Kota Lhokseumawe
                 </h1>

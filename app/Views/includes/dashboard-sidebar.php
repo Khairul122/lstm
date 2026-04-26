@@ -15,13 +15,13 @@
     <nav class="nav-menu" style="padding: 22px 16px; flex: 1;">
         <div class="nav-group-title">Menu Utama</div>
         <div class="nav-list">
-            <a class="nav-pill" href="<?= e(base_url('/')) ?>" target="_blank" rel="noreferrer">
+            <!-- <a class="nav-pill" href="<?= e(base_url('/')) ?>" target="_blank" rel="noreferrer">
                 <svg viewBox="0 0 24 24">
                     <path d="M3 12l9-9 9 9"></path>
                     <path d="M5 10v10h14V10"></path>
                 </svg>
                 Landing Page
-            </a>
+            </a> -->
             <a class="nav-pill<?= ($activeNav ?? 'dashboard') === 'dashboard' ? ' is-active' : '' ?>" href="<?= e(base_url('/dashboard')) ?>">
                 <svg viewBox="0 0 24 24">
                     <rect x="3" y="3" width="7" height="7" rx="1"></rect>
@@ -31,13 +31,13 @@
                 </svg>
                 Dashboard
             </a>
-            <a class="nav-pill<?= ($activeNav ?? '') === 'profile' ? ' is-active' : '' ?>" href="<?= e(base_url('/profile')) ?>">
+            <!-- <a class="nav-pill<?= ($activeNav ?? '') === 'profile' ? ' is-active' : '' ?>" href="<?= e(base_url('/profile')) ?>">
                 <svg viewBox="0 0 24 24">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
                 Profile
-            </a>
+            </a> -->
         </div>
 
         <div class="nav-group-title" style="margin-top: 20px;">Data Master</div>
