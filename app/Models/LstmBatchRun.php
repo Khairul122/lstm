@@ -761,6 +761,51 @@ final class LstmBatchRun
         }
     }
 
+    public static function deleteBatch(int $batchId): void
+    {
+        self::ensureTables();
+        $pdo = Database::connection();
+
+        // collect model file paths for runs in the batch
+        $stmt = $pdo->prepare('SELECT model_path FROM lstm_model_runs WHERE batch_id = :batch_id AND model_path IS NOT NULL');
+        $stmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
+        $stmt->execute();
+        $files = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        $pdo->beginTransaction();
+        try {
+            $del = $pdo->prepare('DELETE FROM lstm_batch_runs WHERE id = :id');
+            $del->bindValue(':id', $batchId, PDO::PARAM_INT);
+            $del->execute();
+            $pdo->commit();
+        } catch (\Throwable $exception) {
+            $pdo->rollBack();
+            throw $exception;
+        }
+
+        // try to remove any model files referenced by model_path
+        if (is_array($files)) {
+            $baseDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR;
+            foreach ($files as $file) {
+                $file = (string) $file;
+                if ($file === '') {
+                    continue;
+                }
+                $candidate = $baseDir . ltrim($file, '\\\/');
+                if (is_file($candidate)) {
+                    @unlink($candidate);
+                    continue;
+                }
+                // fallback: check storage/models by basename
+                $modelDir = $baseDir . 'storage' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR;
+                $candidate2 = $modelDir . basename($file);
+                if (is_file($candidate2)) {
+                    @unlink($candidate2);
+                }
+            }
+        }
+    }
+
     private static function paginateChildTable(
         string $baseSelect,
         string $baseCount,

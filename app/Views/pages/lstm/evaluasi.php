@@ -92,7 +92,13 @@ $pageNumbers = array_values(array_unique($pageNumbers));
                                     <td><?= e((string) $item['completed_komoditas']) ?>/<?= e((string) $item['total_komoditas']) ?> selesai</td>
                                     <td>Seq <?= e((string) $item['sequence_length']) ?> | Epoch <?= e((string) $item['epochs']) ?> | Unit <?= e((string) $item['lstm_units']) ?></td>
                                     <td><?= e((string) (($item['duration_seconds'] ?? 0) . ' dtk')) ?></td>
-                                    <td><a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $item['id'])) ?>">Detail Batch</a></td>
+                                    <td>
+                                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $item['id'])) ?>">Detail Batch</a>
+                                            <form action="<?= e(base_url('/evaluasi/batch/' . $item['id'] . '/delete')) ?>" method="POST" style="display:inline" onsubmit="return confirm('Yakin ingin menghapus batch ini beserta seluruh data terkait?');">
+                                                <input type="hidden" name="_token" value="<?= e(\Core\CSRF::token()) ?>">
+                                                <button type="submit" class="action-link danger">Hapus</button>
+                                            </form>
+                                        </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>

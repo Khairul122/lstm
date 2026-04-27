@@ -50,3 +50,4 @@ $router->get('/evaluasi/batch/{id}/export/rekap-komoditas/{format}', [LstmContro
 $router->get('/evaluasi/run/{id}/export/prediksi/{format}', [LstmController::class, 'exportPredictions'], [AuthMiddleware::class]);
 $router->get('/evaluasi/run/{id}/export/residual/{format}', [LstmController::class, 'exportResiduals'], [AuthMiddleware::class]);
 $router->get('/evaluasi/run/{id}/export/forecast/{format}', [LstmController::class, 'exportForecasts'], [AuthMiddleware::class]);
+$router->post('/evaluasi/batch/{id}/delete', [LstmController::class, 'deleteBatch'], [AuthMiddleware::class, CSRFCheckMiddleware::class]);

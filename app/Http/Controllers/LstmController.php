@@ -216,6 +216,48 @@ final class LstmController extends Controller
         ]);
     }
 
+    public function deleteBatch(string $id): void
+    {
+        LstmBatchRun::ensureTables();
+        $batchId = (int) $id;
+        $batch = LstmBatchRun::find($batchId);
+
+        if ($batch === null) {
+            Session::flash('flash_popup', [
+                'type' => 'error',
+                'title' => 'Batch Tidak Ditemukan',
+                'message' => 'Batch LSTM yang ingin dihapus tidak tersedia.',
+            ]);
+            $this->redirect('/evaluasi');
+        }
+
+        if (($batch['status'] ?? '') === 'running') {
+            Session::flash('flash_popup', [
+                'type' => 'error',
+                'title' => 'Batch Sedang Berjalan',
+                'message' => 'Tidak dapat menghapus batch yang sedang berjalan.',
+            ]);
+            $this->redirect('/evaluasi');
+        }
+
+        try {
+            LstmBatchRun::deleteBatch($batchId);
+            Session::flash('flash_popup', [
+                'type' => 'success',
+                'title' => 'Hapus Berhasil',
+                'message' => 'Batch dan data terkait berhasil dihapus.',
+            ]);
+        } catch (\Throwable $exception) {
+            Session::flash('flash_popup', [
+                'type' => 'error',
+                'title' => 'Hapus Gagal',
+                'message' => $exception->getMessage(),
+            ]);
+        }
+
+        $this->redirect('/evaluasi');
+    }
+
     public function exportBatchSummary(string $id, string $format): void
     {
         $batchId = (int) $id;
