@@ -49,6 +49,11 @@ final class Router
         }
 
         http_response_code(404);
+        $viewFile = __DIR__ . '/../app/Views/pages/errors/404.php';
+        if (is_file($viewFile)) {
+            require $viewFile;
+            return;
+        }
         echo '404 Not Found';
     }
 }
