@@ -9,26 +9,44 @@ declare(strict_types=1);
   <title>404 - Halaman Tidak Ditemukan</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>body{font-family:'Plus Jakarta Sans',sans-serif}</style>
+  <style>
+    body{font-family:'Plus Jakarta Sans',sans-serif}
+    /* small enhancements for the LSTM project look */
+    .muted { color: #6B7280 }
+  </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
-  <main class="max-w-3xl mx-auto p-8 text-center">
-    <div class="inline-flex items-center justify-center w-40 h-40 bg-white rounded-full shadow-md mx-auto mb-6">
-      <!-- Simple illustrative SVG maskot -->
-      <svg width="84" height="84" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M11 3h2v10h-2z" fill="#4F46E5"/>
-        <path d="M5 21h14v-2a6 6 0 00-6-6H11a6 6 0 00-6 6v2z" fill="#A78BFA"/>
-      </svg>
-    </div>
+<body class="bg-gradient-to-b from-gray-50 to-white min-h-screen flex items-center justify-center">
+  <main class="w-full max-w-4xl mx-auto p-6 flex flex-col md:flex-row items-center gap-8">
+    <section class="flex-1 text-center md:text-left">
+      <h1 class="text-6xl font-extrabold text-gray-800 mb-2">404</h1>
+      <p class="text-lg text-gray-600 mb-6">Ups — halaman yang Anda cari tidak ditemukan.</p>
 
-    <h1 class="text-5xl font-bold text-gray-800 mb-4">404</h1>
-    <p class="text-xl text-gray-600 mb-6">Maaf, halaman yang Anda minta tidak ditemukan.</p>
-    <div class="space-x-2">
-      <a href="<?= base_url('/') ?>" class="inline-block bg-indigo-600 text-white px-5 py-3 rounded-md hover:bg-indigo-700">Kembali ke Beranda</a>
-      <a href="<?= base_url('/login') ?>" class="inline-block bg-white border border-gray-200 text-gray-700 px-5 py-3 rounded-md">Halaman Login</a>
-    </div>
+      <form id="errorsSearch" class="mb-4 flex items-center justify-center md:justify-start" role="search" aria-label="Cari di situs">
+        <input id="searchInput" name="q" type="search" placeholder="Cari komoditas atau halaman..." class="w-full md:w-80 px-4 py-3 rounded-l-md border border-gray-200 focus:outline-none" />
+        <button type="submit" class="px-4 py-3 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700">Cari</button>
+      </form>
 
-    <p class="text-sm text-gray-400 mt-6">Sistem Prediksi Stok Pangan — jika perlu, laporkan tautan rusak ke admin.</p>
+      <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+        <a href="<?= base_url('/') ?>" class="px-4 py-2 bg-white border rounded-md muted hover:shadow">Beranda</a>
+        <a href="<?= base_url('/login') ?>" class="px-4 py-2 bg-white border rounded-md muted hover:shadow">Login</a>
+        <a href="<?= base_url('/komoditas') ?>" class="px-4 py-2 bg-white border rounded-md muted hover:shadow">Daftar Komoditas</a>
+        <a href="<?= base_url('/evaluasi') ?>" class="px-4 py-2 bg-white border rounded-md muted hover:shadow">Evaluasi</a>
+      </div>
+
+      <p class="text-sm text-gray-400 mt-6">Sistem Prediksi Stok Pangan — laporkan tautan rusak ke admin jika perlu.</p>
+    </section>
+
+    <aside class="w-64 md:w-96 flex-shrink-0">
+      <!-- Lottie player; local fallback to public/img/404-lottie.json -->
+      <div class="bg-white rounded-xl p-4 shadow-md">
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player id="lottie404" src="<?= base_url('/public/img/404-lottie.json') ?>" background="transparent" speed="1" style="width:100%;height:320px;" loop autoplay aria-label="Animasi maskot 404"></lottie-player>
+      </div>
+
+      <div class="mt-4 text-center text-sm muted">Coba kembali ke beranda atau cari sesuatu yang Anda butuhkan.</div>
+    </aside>
   </main>
+
+  <script src="<?= base_url('/public/js/errors-404.js') ?>"></script>
 </body>
 </html>
