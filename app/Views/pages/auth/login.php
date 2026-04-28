@@ -17,49 +17,19 @@ $dialogType = $error ? 'error' : 'success';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(base_url('/public/css/auth.css')) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('/public/css/auth.css')) ?>?v=<?= time() ?>">
 </head>
 <body class="auth-body">
 <main class="auth-shell">
-    <section class="auth-side auth-side-brand" data-animate="fade-left">
-        <div class="brand-wrap">
-            <p class="brand-kicker">Dinas Pangan · Kota Lhokseumawe</p>
-            <h1>Sistem Forecasting Stok Pangan Berbasis LSTM</h1>
-            <p class="brand-desc">
-                Platform prediksi stok pangan menggunakan algoritma <strong>Long Short-Term Memory (LSTM)</strong> untuk mendukung pengambilan keputusan distribusi pangan yang lebih akurat.
-            </p>
-
-            <div class="feature-list">
-                <article class="feature-item">
-                    <span class="feature-dot"></span>
-                    <div>
-                        <h2>Forecasting LSTM</h2>
-                        <p>Prediksi stok komoditas pangan 1 tahun ke depan menggunakan model <strong>deep learning</strong>.</p>
-                    </div>
-                </article>
-                <article class="feature-item">
-                    <span class="feature-dot"></span>
-                    <div>
-                        <h2>Preprocessing Otomatis</h2>
-                        <p>Normalisasi Min-Max, deteksi <strong>outlier</strong>, dan pembentukan sekuens otomatis.</p>
-                    </div>
-                </article>
-                <article class="feature-item">
-                    <span class="feature-dot"></span>
-                    <div>
-                        <h2>Evaluasi Model</h2>
-                        <p>Metrik evaluasi <strong>RMSE, MAE, MAPE</strong> tersedia per komoditas per batch training.</p>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section class="auth-side auth-side-form" data-animate="fade-up">
+    <section class="auth-side-form" data-animate="fade-up">
         <div class="login-card">
-            <header class="login-head">
-                <h2>Selamat Datang</h2>
-                <p>Masukkan kredensial Anda untuk mengakses panel sistem LSTM Pangan.</p>
+            <header class="login-head" style="text-align: center; margin-bottom: 28px;">
+                <div style="width: 64px; height: 64px; background: hsla(220, 63%, 50%, 0.1); border-radius: 18px; margin: 0 auto 18px; display: grid; place-items: center;">
+                    <img src="<?= e(base_url('/public/images/logo/logo.png')) ?>" alt="Logo" style="width: 40px; height: 40px; object-fit: contain;">
+                </div>
+                <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin: 0 0 6px;">LSTM Pangan</h1>
+                <h2 style="font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); margin: 0;">Dinas Pangan Kota Lhokseumawe</h2>
+                <p style="margin-top: 14px; font-size: 0.95rem;">Masukkan kredensial Anda untuk mengakses panel sistem.</p>
             </header>
 
             <form action="<?= e(base_url('/login')) ?>" method="POST" class="login-form" id="loginForm" novalidate>

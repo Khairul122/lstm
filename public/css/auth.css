@@ -1,20 +1,20 @@
 :root {
     --font-primary: 'Plus Jakarta Sans', system-ui, sans-serif;
-    --bg-main: hsl(138, 22%, 97%);
-    --bg-panel: hsl(140, 28%, 94%);
+    --bg-main: hsl(210, 22%, 97%);
+    --bg-panel: hsl(210, 28%, 94%);
     --bg-card: hsl(0, 0%, 100%);
-    --text-primary: hsl(145, 30%, 12%);
-    --text-secondary: hsl(145, 14%, 34%);
-    --line: hsl(140, 22%, 84%);
-    --brand: hsl(142, 63%, 32%);
-    --brand-soft: hsl(142, 56%, 92%);
-    --brand-mid: hsl(142, 63%, 42%);
-    --teal: hsl(174, 73%, 34%);
+    --text-primary: hsl(220, 30%, 12%);
+    --text-secondary: hsl(220, 14%, 34%);
+    --line: hsl(210, 22%, 84%);
+    --brand: hsl(220, 63%, 40%);
+    --brand-soft: hsl(220, 56%, 92%);
+    --brand-mid: hsl(220, 63%, 50%);
+    --teal: hsl(200, 73%, 40%);
     --danger-bg: hsl(2, 100%, 96%);
     --danger-text: hsl(0, 73%, 42%);
     --success-bg: hsl(142, 57%, 94%);
     --success-text: hsl(150, 59%, 28%);
-    --shadow-xl: 0 30px 65px rgba(5, 46, 22, 0.14);
+    --shadow-xl: 0 30px 65px rgba(15, 23, 42, 0.14);
     --radius-xl: 24px;
     --radius-lg: 16px;
     --space-2: 0.5rem;
@@ -45,8 +45,11 @@ body {
 
 .auth-shell {
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url('../images/background-login.jpeg') center/cover no-repeat;
+    padding: 1.5rem;
 }
 
 .auth-side {
@@ -56,7 +59,7 @@ body {
 }
 
 .auth-side-brand {
-    background: linear-gradient(145deg, hsl(150, 64%, 13%) 0%, hsl(174, 62%, 18%) 100%);
+    background: hsl(220, 63%, 12%) url('../images/background-login.jpeg') center/cover no-repeat;
     color: #fff;
     align-items: center;
     overflow: hidden;
@@ -149,9 +152,11 @@ body {
 }
 
 .auth-side-form {
+    display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-panel);
+    background: transparent;
+    width: 100%;
 }
 
 .login-card {
@@ -222,8 +227,8 @@ body {
 }
 
 .input-group input:focus-visible {
-    border-color: hsla(142, 63%, 32%, 0.75);
-    box-shadow: 0 0 0 4px hsla(142, 63%, 32%, 0.14);
+    border-color: hsla(220, 63%, 40%, 0.75);
+    box-shadow: 0 0 0 4px hsla(220, 63%, 40%, 0.14);
 }
 
 .password-wrap {
@@ -241,7 +246,7 @@ body {
     transform: translateY(-50%);
     border: 0;
     background: transparent;
-    color: hsl(142, 63%, 28%);
+    color: hsl(220, 63%, 36%);
     font-weight: 700;
     padding: 0.35rem 0.6rem;
     border-radius: 10px;
@@ -250,7 +255,7 @@ body {
 
 .toggle-password:hover,
 .toggle-password:focus-visible {
-    background: hsla(142, 63%, 32%, 0.1);
+    background: hsla(220, 63%, 40%, 0.1);
     outline: none;
 }
 
@@ -264,13 +269,13 @@ body {
     font-size: 1rem;
     cursor: pointer;
     transition: transform var(--transition), box-shadow var(--transition);
-    box-shadow: 0 16px 30px rgba(21, 128, 61, 0.28);
+    box-shadow: 0 16px 30px rgba(37, 99, 235, 0.28);
 }
 
 .btn-login:hover,
 .btn-login:focus-visible {
     transform: translateY(-2px);
-    box-shadow: 0 22px 34px rgba(21, 128, 61, 0.34);
+    box-shadow: 0 22px 34px rgba(37, 99, 235, 0.34);
     outline: none;
 }
 
@@ -374,7 +379,7 @@ body {
     position: absolute;
     inset: 0 0 auto;
     height: 5px;
-    background: linear-gradient(90deg, hsl(142, 63%, 32%), hsl(174, 73%, 34%));
+    background: linear-gradient(90deg, hsl(220, 63%, 40%), hsl(200, 73%, 40%));
 }
 
 .dialog-dismiss {
@@ -532,7 +537,7 @@ body {
 
 .dialog-success .dialog-close {
     background: hsl(150, 59%, 28%);
-    box-shadow: 0 16px 30px rgba(21, 128, 61, 0.22);
+    box-shadow: 0 16px 30px rgba(37, 99, 235, 0.22);
 }
 
 @keyframes dialogIn {

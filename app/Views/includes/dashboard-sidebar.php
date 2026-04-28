@@ -1,10 +1,7 @@
 <aside class="sidebar" id="panelSidebar">
     <div class="brand-wrapper" style="padding: 28px 22px 22px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <div class="brand-logo">
-            <svg viewBox="0 0 24 24">
-                <path d="M3 3v18h18"></path>
-                <path d="M7 16l4-7 4 4 3-6"></path>
-            </svg>
+        <div class="brand-logo" style="background: transparent; box-shadow: none;">
+            <img src="<?= e(base_url('/public/images/logo/logo.png')) ?>" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: var(--radius-lg);">
         </div>
         <div class="brand-info">
             <p class="brand">LSTM Pangan</p>
@@ -92,7 +89,7 @@
 
     <div style="padding: 16px; border-top: 1px solid rgba(255,255,255,0.07);">
         <div style="display:flex; align-items:center; gap:8px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
                 <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
                 <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
