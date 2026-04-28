@@ -143,8 +143,7 @@ a { color: inherit; }
 
 .sidebar {
     width: var(--sidebar-width);
-    background:
-        linear-gradient(180deg, var(--brand-darker) 0%, var(--brand-dark) 40%, #0f172a 100%);
+    background: var(--brand-dark);
     color: #fff;
     padding: 0;
     display: flex;
@@ -160,19 +159,9 @@ a { color: inherit; }
     overflow-x: hidden;
 }
 
-/* Subtle diagonal grid texture */
+/* Subtle diagonal grid texture - Removed per user request */
 .sidebar::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(45deg, rgba(255,255,255,0.015) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(255,255,255,0.015) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.015) 75%),
-        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.015) 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
-    pointer-events: none;
+    display: none;
 }
 
 /* Brand header in sidebar */
