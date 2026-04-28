@@ -92,27 +92,14 @@ final class LstmController extends Controller
             'notes' => 'Batch training semua komoditas dimulai dari panel aplikasi.',
         ]);
 
-        $command = sprintf(
-            'python "database/train_lstm_batch.py" %d',
-            $batchId
-        );
-
-        exec($command . ' 2>&1', $output, $exitCode);
-
-        $batch = LstmBatchRun::find($batchId);
-        $status = (string) ($batch['status'] ?? 'failed');
-        $message = (string) ($batch['notes'] ?? 'Batch training selesai diproses.');
-        $popupType = $status === 'completed' ? 'success' : ($status === 'completed_with_errors' ? 'neutral' : 'error');
-
-        if ($exitCode !== 0 && $status === 'queued') {
-            $popupType = 'error';
-            $message = implode("\n", $output);
-        }
+        $scriptPath = realpath('database/train_lstm_batch.py');
+        $command = sprintf('start /B python "%s" %d > NUL 2>&1', $scriptPath, $batchId);
+        pclose(popen($command, "r"));
 
         Session::flash('flash_popup', [
-            'type' => $popupType,
-            'title' => 'Batch LSTM Selesai',
-            'message' => $message,
+            'type' => 'success',
+            'title' => 'Training Dimulai',
+            'message' => 'Proses batch training sedang berjalan di latar belakang. Silakan periksa halaman ini secara berkala.',
             'redirect' => base_url('/lstm/batch/' . $batchId),
         ]);
 

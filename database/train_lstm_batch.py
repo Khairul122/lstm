@@ -434,7 +434,8 @@ def forecast_next_year(model, latest_sequence, horizon: int = 365) -> list[float
         x_input = np.array(sequence[-window_size:], dtype=np.float32).reshape(
             1, window_size, 1
         )
-        predicted = float(model.predict(x_input, verbose=0)[0][0])
+        pred_tensor = model(x_input, training=False)
+        predicted = float(pred_tensor[0][0])
         predicted = max(0.0, min(1.0, predicted))
         forecasts.append(predicted)
         sequence.append(predicted)
