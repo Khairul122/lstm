@@ -857,7 +857,7 @@ $mascotSectionTips = [
                     <h2 class="mb-5 text-4xl font-bold text-primary sm:text-5xl">Seluruh Komoditas yang Dipantau</h2>
                     <p class="text-lg text-on-surface-variant">Sistem memantau <strong class="text-primary"><?= e((string) $komoditasTotal) ?></strong> komoditas strategis. Setiap komoditas memiliki model prediksi dan histori stok sendiri.</p>
                 </div>
-                <div class="reveal grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                <div class="reveal flex flex-wrap justify-center gap-5">
                     <?php foreach ($komoditasList as $komoditas): ?>
                         <?php
                         $namaKomoditas = (string) ($komoditas['nama_komoditas'] ?? '-');
@@ -865,13 +865,13 @@ $mascotSectionTips = [
                         $satuanKomoditas = (string) ($komoditas['satuan'] ?? '-');
                         $icon = $resolveCommodityIcon($namaKomoditas);
                         ?>
-                        <div class="commodity-chip rounded-xl border border-outline-variant/20 bg-surface-container-lowest/70 p-5 text-center">
-                            <span class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                <span class="material-symbols-outlined"><?= e($icon) ?></span>
+                        <div class="commodity-chip rounded-2xl border border-slate-100 bg-white p-6 text-center hover-lift card-glow-primary w-[calc(50%-10px)] sm:w-[calc(33.33%-14px)] md:w-[calc(25%-16px)] lg:w-[calc(16.66%-17px)] min-w-[170px]">
+                            <span class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/5 shadow-sm">
+                                <span class="material-symbols-outlined text-2xl"><?= e($icon) ?></span>
                             </span>
-                            <h4 class="text-sm font-bold text-primary"><?= e($namaKomoditas) ?></h4>
-                            <p class="mt-1 text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant"><?= e($kodeKomoditas) ?></p>
-                            <p class="mt-2 text-[11px] text-on-surface-variant">Satuan: <strong><?= e($satuanKomoditas) ?></strong></p>
+                            <h4 class="text-sm font-extrabold text-primary tracking-tight"><?= e($namaKomoditas) ?></h4>
+                            <p class="mt-1 text-[9px] font-extrabold uppercase tracking-widest text-slate-400"><?= e($kodeKomoditas) ?></p>
+                            <p class="mt-3 text-[11px] text-on-surface-variant font-medium">Satuan: <strong class="text-primary font-bold"><?= e($satuanKomoditas) ?></strong></p>
                         </div>
                     <?php endforeach; ?>
                 </div>

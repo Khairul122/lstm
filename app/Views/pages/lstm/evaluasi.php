@@ -69,6 +69,13 @@ $pageNumbers = array_values(array_unique($pageNumbers));
                 </div>
             </section>
 
+            <section class="glass-card">
+                <div class="section-copy" style="margin-bottom:16px;"><h2>Export Semua Data Evaluasi</h2><p>Unduh seluruh batch, run, metrik, prediksi, residual, dan forecast di seluruh sistem sekaligus dalam satu file ZIP berisi banyak CSV (satu CSV per jenis data/komoditas, dikelompokkan per batch).</p></div>
+                <div class="export-actions">
+                    <a class="action-link" href="<?= e(base_url('/evaluasi/export/semua/csv')) ?>">Download Semua (CSV)</a>
+                </div>
+            </section>
+
             <section class="table-card">
                 <div class="toolbar">
                     <form class="search-form" action="<?= e(base_url('/evaluasi')) ?>" method="GET">

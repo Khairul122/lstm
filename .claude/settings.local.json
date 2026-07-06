@@ -13,7 +13,8 @@
       "Bash(python skills/ui-ux-pro-max/scripts/search.py \"government data science forecasting dashboard navy professional\" --design-system -p \"Stok Pangan Lhokseumawe\")",
       "Bash(python src/ui-ux-pro-max/scripts/search.py \"government data science forecasting dashboard navy professional\" --design-system -p \"Stok Pangan Lhokseumawe\")",
       "Bash(python src/ui-ux-pro-max/scripts/search.py \"hero section government dashboard landing\" --domain landing -n 5)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(git config *)"
     ]
   }
 }

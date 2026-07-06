@@ -44,13 +44,7 @@ $router->post('/lstm/reset-all', [LstmController::class, 'resetAll'], [AuthMiddl
 $router->get('/lstm/batch/{id}', [LstmController::class, 'batch'], [AuthMiddleware::class]);
 $router->get('/lstm/run/{id}', [LstmController::class, 'run'], [AuthMiddleware::class]);
 $router->get('/evaluasi', [LstmController::class, 'evaluationIndex'], [AuthMiddleware::class]);
+$router->get('/evaluasi/export/semua/csv', [LstmController::class, 'exportAll'], [AuthMiddleware::class]);
 $router->get('/evaluasi/batch/{id}', [LstmController::class, 'batch'], [AuthMiddleware::class]);
 $router->get('/evaluasi/run/{id}', [LstmController::class, 'run'], [AuthMiddleware::class]);
-$router->get('/evaluasi/batch/{id}/export/semua/csv', [LstmController::class, 'exportBatchAll'], [AuthMiddleware::class]);
-$router->get('/evaluasi/batch/{id}/export/batch-summary/{format}', [LstmController::class, 'exportBatchSummary'], [AuthMiddleware::class]);
-$router->get('/evaluasi/batch/{id}/export/batch-lengkap/{format}', [LstmController::class, 'exportBatchComplete'], [AuthMiddleware::class]);
-$router->get('/evaluasi/batch/{id}/export/rekap-komoditas/{format}', [LstmController::class, 'exportCommodityRecap'], [AuthMiddleware::class]);
-$router->get('/evaluasi/run/{id}/export/prediksi/{format}', [LstmController::class, 'exportPredictions'], [AuthMiddleware::class]);
-$router->get('/evaluasi/run/{id}/export/residual/{format}', [LstmController::class, 'exportResiduals'], [AuthMiddleware::class]);
-$router->get('/evaluasi/run/{id}/export/forecast/{format}', [LstmController::class, 'exportForecasts'], [AuthMiddleware::class]);
 $router->post('/evaluasi/batch/{id}/delete', [LstmController::class, 'deleteBatch'], [AuthMiddleware::class, CSRFCheckMiddleware::class]);

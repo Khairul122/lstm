@@ -70,39 +70,6 @@ $historicalValues = array_map(static fn(array $row): float => (float) $row['stok
                 </div>
             </section>
 
-            <section class="glass-card">
-                <div class="section-copy" style="margin-bottom:16px;"><h2>Export Hasil Evaluasi Run</h2><p>Unduh data evaluasi rinci untuk komoditas ini dalam format PDF, Excel, atau CSV.</p></div>
-                <div class="export-grid">
-                    <div class="export-box">
-                        <h3>Prediksi</h3>
-                        <p>Perbandingan aktual vs prediksi pada data uji.</p>
-                        <div class="export-actions">
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/prediksi/pdf')) ?>">PDF</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/prediksi/excel')) ?>">Excel</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/prediksi/csv')) ?>">CSV</a>
-                        </div>
-                    </div>
-                    <div class="export-box">
-                        <h3>Residual</h3>
-                        <p>Error, absolute error, dan absolute percentage error per tanggal.</p>
-                        <div class="export-actions">
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/residual/pdf')) ?>">PDF</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/residual/excel')) ?>">Excel</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/residual/csv')) ?>">CSV</a>
-                        </div>
-                    </div>
-                    <div class="export-box">
-                        <h3>Forecast</h3>
-                        <p>Prediksi stok 1 tahun ke depan dengan horizon harian.</p>
-                        <div class="export-actions">
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/forecast/pdf')) ?>">PDF</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/forecast/excel')) ?>">Excel</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/run/' . $run['id'] . '/export/forecast/csv')) ?>">CSV</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <section class="chart-grid">
                 <article class="chart-card"><div class="section-copy"><h2>Aktual vs Prediksi (Data Uji)</h2><p class="muted">Visualisasi nilai aktual dan hasil prediksi model pada data uji.</p></div><canvas id="predictionChart"></canvas></article>
                 <article class="chart-card"><div class="section-copy"><h2>Analisis Residual</h2><p class="muted">Error harian model untuk membantu inspeksi bias dan variabilitas prediksi.</p></div><canvas id="residualChart"></canvas></article>

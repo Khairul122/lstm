@@ -413,20 +413,13 @@ Menampilkan:
 
 ### 8. Export Laporan
 
-Export tersedia di modul evaluasi untuk batch dan run.
+Export tersedia sebagai satu tombol di halaman daftar evaluasi (`/evaluasi`), yang mengunduh seluruh data (semua batch, run, metrik, prediksi, residual, forecast) sekaligus dalam satu file ZIP berisi banyak CSV (dikelompokkan per batch).
 
-Contoh route export:
+Route export:
 
 ```text
-/evaluasi/batch/{id}/export/batch-summary/{format}
-/evaluasi/batch/{id}/export/batch-lengkap/{format}
-/evaluasi/batch/{id}/export/rekap-komoditas/{format}
-/evaluasi/run/{id}/export/prediksi/{format}
-/evaluasi/run/{id}/export/residual/{format}
-/evaluasi/run/{id}/export/forecast/{format}
+/evaluasi/export/semua/csv
 ```
-
-Format bergantung implementasi service export yang tersedia di aplikasi.
 
 ### 9. Landing Page Publik
 
@@ -544,7 +537,10 @@ Saran pengembangan berikutnya:
 
 ## Lisensi dan Catatan
 
+Kode sumber project ini bersifat **All Rights Reserved** — lihat file [`LICENSE`](LICENSE)
+untuk ketentuan lengkap.
+
 Project ini menggunakan package pihak ketiga:
-- `tecnickcom/tcpdf`
+- `tecnickcom/tcpdf` (GNU LGPL v3, tunduk pada lisensinya sendiri)
 
 Asset visual publik dan animasi yang dipakai pada landing page sebaiknya selalu dicek kembali lisensi pemakaiannya sebelum digunakan ke produksi.

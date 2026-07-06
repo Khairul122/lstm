@@ -1,0 +1,31 @@
+All Rights Reserved
+
+Copyright (c) 2026 Khairul122 (khairulhuda242@gmail.com)
+
+Sistem Prediksi Stok Pangan Lhokseumawe
+
+Seluruh hak cipta atas kode sumber, dokumentasi, dan aset dalam repositori ini dilindungi
+undang-undang dan menjadi hak eksklusif pemegang hak cipta di atas.
+
+Tidak ada bagian mana pun dari perangkat lunak ini yang boleh:
+  - disalin, digandakan, atau didistribusikan ulang, baik sebagian maupun seluruhnya;
+  - dimodifikasi atau dijadikan karya turunan;
+  - digunakan untuk tujuan komersial maupun non-komersial di luar keperluan akademik yang
+    diizinkan (mis. penilaian skripsi/tugas akhir oleh institusi pendidikan terkait);
+  - dipublikasikan ulang atau diklaim sebagai karya pihak lain,
+
+tanpa izin tertulis terlebih dahulu dari pemegang hak cipta.
+
+PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APA PUN, BAIK TERSURAT
+MAUPUN TERSIRAT, TERMASUK NAMUN TIDAK TERBATAS PADA JAMINAN KELAYAKAN UNTUK DIPERJUALBELIKAN,
+KESESUAIAN UNTUK TUJUAN TERTENTU, DAN NON-PELANGGARAN. DALAM KEADAAN APA PUN PEMEGANG HAK
+CIPTA TIDAK BERTANGGUNG JAWAB ATAS KLAIM, KERUSAKAN, ATAU KEWAJIBAN LAIN YANG TIMBUL DARI,
+ATAU SEHUBUNGAN DENGAN, PERANGKAT LUNAK INI ATAU PENGGUNAANNYA.
+
+---
+
+Catatan mengenai dependensi pihak ketiga:
+
+Proyek ini menggunakan pustaka `tecnickcom/tcpdf` yang tunduk pada lisensinya sendiri
+(GNU LGPL v3) dan tidak termasuk dalam cakupan lisensi "All Rights Reserved" di atas.
+Lihat https://github.com/tecnickcom/TCPDF untuk ketentuan lisensi pustaka tersebut.

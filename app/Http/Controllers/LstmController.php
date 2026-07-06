@@ -245,72 +245,10 @@ final class LstmController extends Controller
         $this->redirect('/evaluasi');
     }
 
-    public function exportBatchSummary(string $id, string $format): void
+    public function exportAll(): void
     {
-        $batchId = (int) $id;
-        $rows = LstmExportService::batchSummary($batchId);
-        $batch = LstmBatchRun::find($batchId);
-        $this->exportRows($rows, $format, 'batch-summary-' . ($batch['batch_code'] ?? $batchId), 'Rekap Batch LSTM');
-    }
-
-    public function exportBatchComplete(string $id, string $format): void
-    {
-        $batchId = (int) $id;
-        $rows = LstmExportService::batchComplete($batchId);
-        $batch = LstmBatchRun::find($batchId);
-        $this->exportRows($rows, $format, 'batch-lengkap-' . ($batch['batch_code'] ?? $batchId), 'Batch Lengkap LSTM');
-    }
-
-    public function exportBatchAll(string $id): void
-    {
-        $batchId = (int) $id;
-        $batch = LstmBatchRun::find($batchId);
-
-        if ($batch === null) {
-            Session::flash('flash_popup', [
-                'type' => 'error',
-                'title' => 'Batch Tidak Ditemukan',
-                'message' => 'Batch LSTM yang diminta tidak tersedia.',
-            ]);
-            $this->redirectBack();
-        }
-
-        $files = LstmExportService::batchAllCsvFiles($batchId);
-        $safeFilename = preg_replace('/[^A-Za-z0-9\-_]+/', '-', strtolower('semua-' . ($batch['batch_code'] ?? $batchId))) ?: 'export-semua';
-
-        ExportResponse::downloadCsvZip($safeFilename . '.zip', $files);
-    }
-
-    public function exportCommodityRecap(string $id, string $format): void
-    {
-        $batchId = (int) $id;
-        $rows = LstmExportService::commodityRecap($batchId);
-        $batch = LstmBatchRun::find($batchId);
-        $this->exportRows($rows, $format, 'rekap-komoditas-' . ($batch['batch_code'] ?? $batchId), 'Rekap Komoditas LSTM');
-    }
-
-    public function exportPredictions(string $id, string $format): void
-    {
-        $runId = (int) $id;
-        $run = LstmBatchRun::findRun($runId);
-        $rows = LstmExportService::predictionRows($runId);
-        $this->exportRows($rows, $format, 'prediksi-' . ($run['komoditas'] ?? $runId), 'Prediksi Data Uji');
-    }
-
-    public function exportResiduals(string $id, string $format): void
-    {
-        $runId = (int) $id;
-        $run = LstmBatchRun::findRun($runId);
-        $rows = LstmExportService::residualRows($runId);
-        $this->exportRows($rows, $format, 'residual-' . ($run['komoditas'] ?? $runId), 'Residual Model');
-    }
-
-    public function exportForecasts(string $id, string $format): void
-    {
-        $runId = (int) $id;
-        $run = LstmBatchRun::findRun($runId);
-        $rows = LstmExportService::forecastRows($runId);
-        $this->exportRows($rows, $format, 'forecast-' . ($run['komoditas'] ?? $runId), 'Forecast 1 Tahun');
+        $files = LstmExportService::allBatchesCsvFiles();
+        ExportResponse::downloadCsvZip('evaluasi-semua-batch-' . date('Ymd-His') . '.zip', $files);
     }
 
     private function sanitize(array $source): array
@@ -388,27 +326,4 @@ final class LstmController extends Controller
         ];
     }
 
-    private function exportRows(array $rows, string $format, string $baseFilename, string $title): void
-    {
-        $safeFilename = preg_replace('/[^A-Za-z0-9\-_]+/', '-', strtolower($baseFilename)) ?: 'export';
-
-        if ($format === 'csv') {
-            ExportResponse::downloadCsv($safeFilename . '.csv', $rows);
-        }
-
-        if ($format === 'excel') {
-            ExportResponse::downloadExcel($safeFilename . '.xls', $rows);
-        }
-
-        if ($format === 'pdf') {
-            ExportResponse::downloadPdf($safeFilename . '.pdf', $title, $rows);
-        }
-
-        Session::flash('flash_popup', [
-            'type' => 'error',
-            'title' => 'Format Tidak Didukung',
-            'message' => 'Format export yang diminta tidak tersedia.',
-        ]);
-        $this->redirectBack();
-    }
 }

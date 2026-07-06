@@ -77,46 +77,6 @@ $pageNumbers = array_values(array_unique($pageNumbers));
                 </div>
             </section>
 
-            <section class="glass-card">
-                <div class="section-copy" style="margin-bottom:16px;"><h2>Export Evaluasi Batch</h2><p>Unduh hasil evaluasi batch ini dalam format PDF, Excel, atau CSV sesuai kebutuhan laporan dan analisis lanjutan.</p></div>
-                <div class="export-grid">
-                    <div class="export-box">
-                        <h3>Export Semua (CSV)</h3>
-                        <p>Unduh seluruh data batch ini sekaligus: rekap batch, batch lengkap, rekap komoditas, serta prediksi, residual, dan forecast tiap komoditas dalam satu file ZIP berisi CSV.</p>
-                        <div class="export-actions">
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/semua/csv')) ?>">Download ZIP</a>
-                        </div>
-                    </div>
-                    <div class="export-box">
-                        <h3>Rekap Batch</h3>
-                        <p>Metadata batch, konfigurasi model, waktu proses, dan status keseluruhan.</p>
-                        <div class="export-actions">
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/batch-summary/pdf')) ?>">PDF</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/batch-summary/excel')) ?>">Excel</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/batch-summary/csv')) ?>">CSV</a>
-                        </div>
-                    </div>
-                    <div class="export-box">
-                        <h3>Batch Lengkap</h3>
-                        <p>Ringkasan batch plus jumlah data prediksi, residual, forecast, dan artefak model per komoditas.</p>
-                        <div class="export-actions">
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/batch-lengkap/pdf')) ?>">PDF</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/batch-lengkap/excel')) ?>">Excel</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/batch-lengkap/csv')) ?>">CSV</a>
-                        </div>
-                    </div>
-                    <div class="export-box">
-                        <h3>Rekap Komoditas</h3>
-                        <p>Metrik evaluasi per komoditas: RMSE, MAE, MAPE, train loss, val loss, dan best epoch.</p>
-                        <div class="export-actions">
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/rekap-komoditas/pdf')) ?>">PDF</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/rekap-komoditas/excel')) ?>">Excel</a>
-                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/rekap-komoditas/csv')) ?>">CSV</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <section class="table-card">
                 <div class="toolbar">
                     <form class="search-form" action="<?= e(base_url('/lstm/batch/' . $batch['id'])) ?>" method="GET">

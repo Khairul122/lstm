@@ -17,7 +17,26 @@ if (!function_exists('app_config')) {
 if (!function_exists('base_url')) {
     function base_url(string $path = '/'): string
     {
-        $base = rtrim((string) app_config('base_url', ''), '/');
+        $envUrl = getenv('APP_URL');
+        if ($envUrl) {
+            $base = rtrim($envUrl, '/');
+        } elseif (isset($_SERVER['HTTP_HOST'])) {
+            $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $host = $_SERVER['HTTP_HOST'];
+            
+            $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+            $subFolder = '';
+            if ($scriptName) {
+                $dir = dirname($scriptName);
+                if ($dir !== '/' && $dir !== '\\' && $dir !== '.') {
+                    $subFolder = '/' . trim(str_replace('\\', '/', $dir), '/');
+                }
+            }
+            $base = $protocol . '://' . $host . $subFolder;
+        } else {
+            $base = rtrim((string) app_config('base_url', ''), '/');
+        }
+        
         $path = '/' . ltrim($path, '/');
         return $base . ($path === '/' ? '' : $path);
     }
@@ -252,6 +271,10 @@ if (!function_exists('landing_page_theme_assets')) {
     .reveal.visible {
         opacity: 1;
         transform: translateY(0);
+    }
+    
+    .is-hidden {
+        display: none !important;
     }
 
     /* Premium Navigation */

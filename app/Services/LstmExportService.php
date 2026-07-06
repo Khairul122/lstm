@@ -96,25 +96,48 @@ final class LstmExportService
     /**
      * @return array<int, array{filename: string, rows: array}>
      */
-    public static function batchAllCsvFiles(int $batchId): array
+    public static function allBatchesCsvFiles(): array
     {
+        $batches = LstmBatchRun::paginate('', 1, 1000000)['items'];
+
+        $summaryRows = [];
+        $recapRows = [];
+        foreach ($batches as $batch) {
+            $batchId = (int) $batch['id'];
+            $summaryRows = array_merge($summaryRows, self::batchSummary($batchId));
+
+            foreach (self::commodityRecap($batchId) as $recapRow) {
+                $recapRows[] = array_merge(['kode_batch' => $batch['batch_code']], $recapRow);
+            }
+        }
+
         $files = [
-            ['filename' => 'rekap-batch.csv', 'rows' => self::batchSummary($batchId)],
-            ['filename' => 'batch-lengkap.csv', 'rows' => self::batchComplete($batchId)],
-            ['filename' => 'rekap-komoditas.csv', 'rows' => self::commodityRecap($batchId)],
+            ['filename' => 'ringkasan-semua-batch.csv', 'rows' => $summaryRows],
+            ['filename' => 'rekap-komoditas-semua-batch.csv', 'rows' => $recapRows],
         ];
 
-        $runs = LstmBatchRun::commodityRuns($batchId, '', 1, 1000)['items'];
+        foreach ($batches as $batch) {
+            $batchId = (int) $batch['id'];
+            $batchSlug = self::slug((string) $batch['batch_code']) ?: (string) $batchId;
 
-        foreach ($runs as $run) {
-            $runId = (int) $run['id'];
-            $slug = preg_replace('/[^A-Za-z0-9\-_]+/', '-', strtolower((string) $run['komoditas'])) ?: (string) $runId;
+            $files[] = ['filename' => "{$batchSlug}/batch-lengkap.csv", 'rows' => self::batchComplete($batchId)];
 
-            $files[] = ['filename' => "prediksi-{$slug}.csv", 'rows' => self::predictionRows($runId)];
-            $files[] = ['filename' => "residual-{$slug}.csv", 'rows' => self::residualRows($runId)];
-            $files[] = ['filename' => "forecast-{$slug}.csv", 'rows' => self::forecastRows($runId)];
+            $runs = LstmBatchRun::commodityRuns($batchId, '', 1, 1000000)['items'];
+            foreach ($runs as $run) {
+                $runId = (int) $run['id'];
+                $runSlug = self::slug((string) $run['komoditas']) ?: (string) $runId;
+
+                $files[] = ['filename' => "{$batchSlug}/prediksi-{$runSlug}.csv", 'rows' => self::predictionRows($runId)];
+                $files[] = ['filename' => "{$batchSlug}/residual-{$runSlug}.csv", 'rows' => self::residualRows($runId)];
+                $files[] = ['filename' => "{$batchSlug}/forecast-{$runSlug}.csv", 'rows' => self::forecastRows($runId)];
+            }
         }
 
         return $files;
+    }
+
+    private static function slug(string $value): string
+    {
+        return preg_replace('/[^A-Za-z0-9\-_]+/', '-', strtolower($value)) ?: '';
     }
 }
