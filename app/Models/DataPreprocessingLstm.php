@@ -275,6 +275,52 @@ final class DataPreprocessingLstm
         ];
     }
 
+    public static function summaryExportRows(): array
+    {
+        self::ensureTable();
+        $pdo = Database::connection();
+
+        return $pdo->query(
+            'SELECT komoditas,
+                    COUNT(*) AS total_data,
+                    SUM(CASE WHEN status_anomali = "Missing Value" THEN 1 ELSE 0 END) AS missing_value,
+                    SUM(CASE WHEN status_anomali = "Outlier" THEN 1 ELSE 0 END) AS outlier,
+                    SUM(CASE WHEN set_data = "Latih" THEN 1 ELSE 0 END) AS data_latih,
+                    SUM(CASE WHEN set_data = "Uji" THEN 1 ELSE 0 END) AS data_uji,
+                    MIN(stok_bersih) AS min_stok_bersih,
+                    MAX(stok_bersih) AS max_stok_bersih,
+                    AVG(normalisasi_minmax) AS rata_normalisasi,
+                    MIN(format_waktu) AS tanggal_awal,
+                    MAX(format_waktu) AS tanggal_akhir
+             FROM data_preprocessing_lstm
+             GROUP BY komoditas
+             ORDER BY komoditas ASC'
+        )->fetchAll();
+    }
+
+    public static function previewExportRows(): array
+    {
+        self::ensureTable();
+        $pdo = Database::connection();
+
+        return $pdo->query(
+            'SELECT id,
+                    tanggal_asli,
+                    format_waktu,
+                    komoditas,
+                    stok_mentah,
+                    status_anomali,
+                    stok_bersih,
+                    normalisasi_minmax,
+                    input_sekuens_x,
+                    target_label_y,
+                    set_data,
+                    created_at
+             FROM data_preprocessing_lstm
+             ORDER BY komoditas ASC, format_waktu ASC'
+        )->fetchAll();
+    }
+
     public static function evaluationSummary(string $commodity = ''): array
     {
         self::ensureTable();

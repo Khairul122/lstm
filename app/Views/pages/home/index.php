@@ -326,502 +326,39 @@ $mascotSectionTips = [
     <style>
         .gradient-hero {
             background:
-                radial-gradient(1200px 600px at 90% 10%, rgba(167, 200, 255, 0.35), transparent 60%),
-                radial-gradient(900px 500px at 10% 90%, rgba(174, 238, 203, 0.28), transparent 60%),
-                linear-gradient(135deg, #f9f9f8 0%, #eef2f8 100%);
+                radial-gradient(1200px 600px at 90% 10%, rgba(13, 148, 136, 0.12), transparent 60%),
+                radial-gradient(900px 500px at 10% 90%, rgba(15, 59, 117, 0.15), transparent 60%),
+                linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            position: relative;
         }
         .section-divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(66, 71, 80, 0.18), transparent);
+            background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.15), transparent);
         }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(0, 51, 102, 0.25), rgba(44, 105, 78, 0.15));
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity .3s ease;
-        }
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-        .step-connector {
-            position: absolute;
-            left: 50%;
-            top: 44px;
-            width: 100%;
-            height: 2px;
-            border-top: 2px dashed rgba(0, 51, 102, 0.25);
-            z-index: 0;
-        }
-        .step-connector:last-of-type { display: none; }
-        .faq-item[open] summary .faq-toggle {
+        .faq-item-v2[open] .faq-icon {
             transform: rotate(45deg);
+            background-color: #0f3b75;
+            color: #ffffff;
+        }
+        .faq-icon {
+            transition: all .25s ease;
         }
         .commodity-chip {
-            transition: transform .25s ease, box-shadow .25s ease, background-color .25s ease;
+            transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            background-color: rgba(255, 255, 255, 0.6);
         }
         .commodity-chip:hover {
             transform: translateY(-4px);
-            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.10);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
             background-color: #ffffff;
+            border-color: rgba(15, 59, 117, 0.15);
         }
-        .cta-pattern {
-            background:
-                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
-                linear-gradient(135deg, #003366 0%, #234a7e 100%);
-        }
-
-        /* Enhanced Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3); }
-            50% { opacity: 1; transform: scale(1.06); }
-            70% { transform: scale(0.96); }
-            100% { transform: scale(1); }
-        }
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.04); }
-        }
-        @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-6deg); }
-            75% { transform: rotate(6deg); }
-        }
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: .4; }
-            30% { transform: translateY(-4px); opacity: 1; }
-        }
-        @keyframes rippleOut {
-            0% { transform: scale(0.8); opacity: .7; }
-            100% { transform: scale(1.8); opacity: 0; }
-        }
-
-        .stagger-item { opacity: 0; }
-        .stagger-item.visible { animation: fadeInUp .7s ease forwards; }
-        .stagger-item:nth-child(1) { animation-delay: .0s; }
-        .stagger-item:nth-child(2) { animation-delay: .08s; }
-        .stagger-item:nth-child(3) { animation-delay: .16s; }
-        .stagger-item:nth-child(4) { animation-delay: .24s; }
-        .stagger-item:nth-child(5) { animation-delay: .32s; }
-        .stagger-item:nth-child(6) { animation-delay: .40s; }
-
-        /* Mascot */
-        .mascot-shell {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 60;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 12px;
-            pointer-events: none;
-        }
-        .mascot-shell > * { pointer-events: auto; }
-        .mascot-bubble {
-            max-width: 260px;
-            padding: 12px 16px;
-            border-radius: 18px 18px 4px 18px;
-            background: #ffffff;
-            color: #1a1c1b;
-            font-size: 13px;
-            line-height: 1.5;
-            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
-            border: 1px solid rgba(0, 51, 102, 0.08);
-            animation: bounceIn .45s ease;
-        }
-        .mascot-bubble.is-hidden { display: none; }
-        .mascot-card {
-            width: 360px;
-            max-width: calc(100vw - 40px);
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 28px 70px rgba(15, 23, 42, 0.25);
-            border: 1px solid rgba(0, 51, 102, 0.08);
-            overflow: hidden;
-            animation: bounceIn .5s ease;
-            display: flex;
-            flex-direction: column;
-            max-height: 560px;
-        }
-        .mascot-card.is-hidden { display: none; }
-        .mascot-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 18px;
-            background: linear-gradient(135deg, #003366 0%, #234a7e 100%);
-            color: #ffffff;
-        }
-        .mascot-title-wrap {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .mascot-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.18);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: transform .25s ease;
-            position: relative;
-        }
-        .mascot-avatar.is-curious { animation: breathe 3s ease-in-out infinite; }
-        .mascot-avatar.is-excited { animation: wiggle .6s ease-in-out 2; }
-        .mascot-avatar.is-alert { animation: breathe 1.5s ease-in-out infinite; }
-        .mascot-avatar img {
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
-        }
-        .mascot-status {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: .18em;
-            text-transform: uppercase;
-            opacity: .75;
-        }
-        .mascot-actions {
-            display: flex;
-            gap: 6px;
-        }
-        .mascot-icon-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: rgba(255,255,255,.15);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background .2s ease, transform .2s ease;
-            border: none;
-            cursor: pointer;
-        }
-        .mascot-icon-btn:hover { background: rgba(255,255,255,.28); transform: scale(1.05); }
-        .mascot-icon-btn.is-speaking {
-            background: #aeeecb;
-            color: #003366;
-            animation: breathe 1s ease-in-out infinite;
-        }
-        .mascot-body {
-            padding: 16px 18px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        .mascot-message {
-            background: #f3f4f2;
-            border-radius: 14px 14px 14px 4px;
-            padding: 12px 14px;
-            font-size: 13px;
-            line-height: 1.55;
-            color: #1a1c1b;
-            margin-bottom: 14px;
-            min-height: 60px;
-        }
-        .mascot-typing {
-            display: inline-flex;
-            gap: 4px;
-        }
-        .mascot-typing span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #424750;
-            animation: typing 1.2s infinite;
-        }
-        .mascot-typing span:nth-child(2) { animation-delay: .15s; }
-        .mascot-typing span:nth-child(3) { animation-delay: .3s; }
-
-        .mascot-tip {
-            font-size: 11px;
-            color: #424750;
-            background: #eef4ff;
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 14px;
-            border-left: 3px solid #003366;
-        }
-        .mascot-chip-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 14px;
-        }
-        .mascot-chip {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 6px 12px;
-            background: #f3f4f2;
-            border: 1px solid rgba(0, 51, 102, 0.1);
-            border-radius: 999px;
-            color: #003366;
-            cursor: pointer;
-            transition: background .2s ease, transform .2s ease, border-color .2s ease;
-        }
-        .mascot-chip:hover {
-            background: #003366;
-            color: #ffffff;
-            border-color: #003366;
-            transform: translateY(-1px);
-        }
-        .mascot-input-wrap {
-            display: flex;
-            gap: 6px;
-            padding: 12px 14px;
-            border-top: 1px solid rgba(66, 71, 80, 0.1);
-            background: #f9f9f8;
-        }
-        .mascot-input {
-            flex: 1;
-            border: 1px solid rgba(66, 71, 80, 0.18);
-            border-radius: 12px;
-            padding: 8px 12px;
-            font-size: 13px;
-            outline: none;
-            transition: border-color .2s ease;
-        }
-        .mascot-input:focus { border-color: #003366; }
-        .mascot-send {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            background: #003366;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: none;
-            transition: background .2s ease, transform .2s ease;
-        }
-        .mascot-send:hover { background: #234a7e; transform: scale(1.05); }
-        .mascot-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: #003366;
-            color: #ffffff;
-            border: none;
-            border-radius: 999px;
-            padding: 10px 18px 10px 10px;
-            box-shadow: 0 20px 45px rgba(0, 51, 102, 0.32);
-            cursor: pointer;
-            transition: transform .25s ease, box-shadow .25s ease;
-            font-weight: 600;
-            font-size: 13px;
-            position: relative;
-        }
-        .mascot-toggle::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 999px;
-            background: #003366;
-            opacity: .4;
-            animation: rippleOut 2.5s ease-out infinite;
-            z-index: -1;
-        }
-        .mascot-toggle:hover { transform: translateY(-2px) scale(1.03); }
-        .mascot-toggle .mascot-avatar {
-            width: 36px;
-            height: 36px;
-            background: #ffffff;
-        }
-        .mascot-toggle .mascot-avatar img {
-            width: 30px;
-            height: 30px;
-        }
-        .skeleton-shell { transition: opacity .4s ease, visibility .4s ease; }
-        .skeleton-shell.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-        .skeleton-block {
-            background: linear-gradient(90deg, #e2e3e1 0%, #f3f4f2 50%, #e2e3e1 100%);
-            background-size: 200% 100%;
-            animation: shimmer 1.6s linear infinite;
-        }
-        .progress-bar { transform-origin: left center; }
-        .progress-bar.is-visible { animation: fadeInUp .8s ease forwards; }
-
-        /* Reduce motion if user prefers */
-        @media (prefers-reduced-motion: reduce) {
-            .mascot-avatar, .mascot-toggle::before { animation: none !important; }
-        }
-
-        /* ── Hero improvements ── */
-        .hero-dot-grid {
-            background-image: radial-gradient(rgba(0,51,102,0.10) 1px, transparent 1px);
-            background-size: 32px 32px;
-        }
-        @keyframes gridDrift {
-            0%   { background-position: 0 0; }
-            100% { background-position: 32px 32px; }
-        }
-        .hero-dot-grid { animation: gridDrift 28s linear infinite; }
-
-        /* ── Live batch badge pulse ── */
-        .badge-live-dot {
-            position: relative;
-            display: inline-flex;
-        }
-        .badge-live-dot::before {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 999px;
-            background: #aeeecb;
-            opacity: 0.4;
-            animation: ringPop 2.8s ease-out infinite;
-        }
-        @keyframes ringPop {
-            0%   { transform: scale(.8); opacity: .5; }
-            70%  { transform: scale(1.5); opacity: 0; }
-            100% { transform: scale(1.5); opacity: 0; }
-        }
-
-        /* ── Gradient section label ── */
-        .label-gradient {
-            background: linear-gradient(90deg, #003366 0%, #2c694e 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* ── Feature card enhanced ── */
-        .feature-card-v2 {
-            position: relative;
-            background: #ffffff;
-            border: 1px solid rgba(194,198,209,0.4);
-            transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
-            overflow: hidden;
-        }
-        .feature-card-v2::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(0,51,102,0.04) 0%, rgba(44,105,78,0.04) 100%);
-            opacity: 0;
-            transition: opacity .3s ease;
-        }
-        .feature-card-v2:hover { transform: translateY(-6px); box-shadow: 0 24px 56px rgba(0,51,102,0.10); border-color: rgba(0,51,102,0.18); }
-        .feature-card-v2:hover::after { opacity: 1; }
-        .feature-icon-grad {
-            background: linear-gradient(135deg, rgba(0,51,102,0.12) 0%, rgba(44,105,78,0.08) 100%);
-            border: 1px solid rgba(0,51,102,0.08);
-        }
-
-        /* ── Step badge & connector ── */
-        .step-wrapper { position: relative; }
-        .step-number-badge {
-            position: absolute;
-            top: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 26px;
-            height: 26px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, #003366, #2c694e);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 14px rgba(0,51,102,0.28);
-            z-index: 2;
-        }
-        .step-h-connector {
-            display: none;
-        }
-        @media (min-width: 1024px) {
-            .step-h-connector {
-                display: block;
-                position: absolute;
-                top: 54px;
-                left: calc(50% + 42px);
-                right: calc(-50% + 42px);
-                height: 1px;
-                background: linear-gradient(90deg, rgba(0,51,102,0.25), rgba(44,105,78,0.20));
-                z-index: 0;
-            }
-            .step-h-connector::after {
-                content: '';
-                position: absolute;
-                right: -1px;
-                top: -4px;
-                border: 4px solid transparent;
-                border-left: 6px solid rgba(44,105,78,0.4);
-            }
-            .step-wrapper:last-child .step-h-connector { display: none; }
-        }
-
-        /* ── Metric card improved ── */
-        .metric-card-v2 {
-            position: relative;
-            overflow: hidden;
-        }
-        .metric-card-v2::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #003366, #2c694e);
-            opacity: 0;
-            transition: opacity .28s ease;
-        }
-        .metric-card-v2:hover::before { opacity: 1; }
-
-        /* ── Section accent line ── */
-        .accent-underline {
-            width: 40px;
-            height: 3px;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #003366, #2c694e);
-            margin: 12px auto 0;
-        }
-
-        /* ── Hero stat pill ── */
-        .hero-stat-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0,51,102,0.10);
-            border-radius: 999px;
-            padding: 7px 14px;
-            font-size: 13px;
-        }
-
-        /* ── Float for hero card ── */
-        .hero-float { animation: floatSlow 6s ease-in-out infinite; }
-
-        /* ── CTA enhanced pattern ── */
         .cta-pattern-v2 {
             background:
-                radial-gradient(ellipse 80% 60% at 20% 50%, rgba(44,105,78,0.18) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 80% at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
-                linear-gradient(135deg, #002855 0%, #003366 50%, #1a4a6b 100%);
+                radial-gradient(ellipse 80% 60% at 20% 50%, rgba(13, 148, 136, 0.22) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 60%),
+                linear-gradient(135deg, #071e3d 0%, #0f3b75 50%, #1d4ed8 100%);
         }
         .cta-pattern-v2::before {
             content: '';
@@ -832,42 +369,124 @@ $mascotSectionTips = [
             border-radius: inherit;
         }
 
-        /* ── Stats bar highlight ── */
+        /* Ambient floating shapes */
+        @keyframes float-shape-1 {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        @keyframes float-shape-2 {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(-10deg); }
+        }
+        .float-shape-indigo {
+            animation: float-shape-1 7s ease-in-out infinite;
+        }
+        .float-shape-teal {
+            animation: float-shape-2 9s ease-in-out infinite;
+        }
+
+        .hero-dot-grid {
+            background-image: radial-gradient(rgba(15, 59, 117, 0.06) 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            animation: gridDrift 40s linear infinite;
+        }
+        @keyframes gridDrift {
+            0%   { background-position: 0 0; }
+            100% { background-position: 24px 24px; }
+        }
+
+        .hero-stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 99px;
+            padding: 6px 14px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+            transition: all .2s ease;
+        }
+        .hero-stat-pill:hover {
+            transform: translateY(-1.5px);
+            border-color: rgba(15, 59, 117, 0.15);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+        }
+
+        .hero-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        /* Staggered items */
+        .stagger-item { opacity: 0; }
+        .stagger-item.visible { animation: fadeInUp .7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .stagger-item:nth-child(1) { animation-delay: .0s; }
+        .stagger-item:nth-child(2) { animation-delay: .06s; }
+        .stagger-item:nth-child(3) { animation-delay: .12s; }
+        .stagger-item:nth-child(4) { animation-delay: .18s; }
+        .stagger-item:nth-child(5) { animation-delay: .24s; }
+        .stagger-item:nth-child(6) { animation-delay: .30s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .stat-card-bar {
             position: relative;
+            background: #ffffff;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .stat-card-bar::before {
+        .stat-card-bar:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            z-index: 10;
+        }
+        .stat-card-bar::after {
             content: '';
             position: absolute;
             bottom: 0; left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, #003366, #2c694e);
+            background: linear-gradient(90deg, #0f3b75, #0d9488);
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform .4s ease;
+            transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .stat-card-bar:hover::before { transform: scaleX(1); }
+        .stat-card-bar:hover::after {
+            transform: scaleX(1);
+        }
 
-        /* ── FAQ improved ── */
-        .faq-item-v2[open] .faq-icon { transform: rotate(45deg); }
-        .faq-icon { transition: transform .25s ease; }
+        /* Pulse live badge */
+        .badge-live-pulse {
+            position: relative;
+        }
+        .badge-live-pulse::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background-color: inherit;
+            opacity: 0.4;
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
     </style>
 </head>
 <body class="bg-background text-on-surface">
 
-<header class="sticky top-0 z-50 w-full border-b border-white/70 bg-[#f9f9f8]/90 backdrop-blur-xl">
+<header class="sticky top-0 z-50 w-full border-b border-slate-200/50 bg-white/75 backdrop-blur-md">
     <div class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-5 py-4 sm:px-8">
-        <a href="#beranda" class="flex items-center gap-3">
-            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-on-primary shadow-glow">
+        <a href="#beranda" class="flex items-center gap-3 group">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-white shadow-glow transition-transform group-hover:scale-105">
                 <span class="material-symbols-outlined">agriculture</span>
             </span>
             <div>
-                <div class="text-[10px] font-bold uppercase tracking-[0.28em] text-on-surface-variant">Dinas Pangan</div>
-                <div class="text-sm font-bold tracking-tight text-primary sm:text-base">Stok Pangan Lhokseumawe</div>
+                <div class="text-[9px] font-extrabold uppercase tracking-[0.28em] text-secondary">Dinas Pangan</div>
+                <div class="text-sm font-extrabold tracking-tight text-primary sm:text-base">Stok Pangan Lhokseumawe</div>
             </div>
         </a>
-        <button type="button" class="flex h-11 w-11 items-center justify-center rounded-lg border border-outline-variant/30 bg-surface-container-lowest text-primary md:hidden" id="mobileMenuButton" aria-expanded="false" aria-controls="mobileNavPanel">
+        <button type="button" class="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-primary md:hidden" id="mobileMenuButton" aria-expanded="false" aria-controls="mobileNavPanel">
             <span class="material-symbols-outlined">menu</span>
         </button>
         <nav class="hidden items-center gap-8 md:flex">
@@ -879,20 +498,20 @@ $mascotSectionTips = [
             <a class="nav-link font-semibold tracking-tight text-on-surface-variant transition-colors duration-200 hover:text-primary" href="#faq">FAQ</a>
         </nav>
         <div class="hidden items-center gap-3 md:flex">
-            <a href="<?= e(base_url('/login')) ?>" class="interactive-button rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-opacity hover:opacity-90 sm:px-6" data-magnetic>
+            <a href="<?= e(base_url('/login')) ?>" class="interactive-button rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:bg-gradient-to-r hover:from-primary hover:to-secondary transition-all sm:px-6" data-magnetic>
                 Masuk Sistem
             </a>
         </div>
     </div>
-    <div id="mobileNavPanel" class="mobile-nav-panel hidden border-t border-outline-variant/20 bg-[#f9f9f8]/95 px-5 py-4 md:hidden sm:px-8">
+    <div id="mobileNavPanel" class="mobile-nav-panel hidden border-t border-slate-200 bg-white/95 px-5 py-4 md:hidden sm:px-8 backdrop-blur-md">
         <div class="flex flex-col gap-3">
-            <a class="rounded-lg bg-surface-container-low px-4 py-3 font-semibold text-primary" href="#beranda">Beranda</a>
-            <a class="rounded-lg bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface-variant" href="#fitur">Fitur</a>
-            <a class="rounded-lg bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface-variant" href="#cara-kerja">Cara Kerja</a>
-            <a class="rounded-lg bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface-variant" href="#dashboard">Dashboard</a>
-            <a class="rounded-lg bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface-variant" href="#prediksi">Prediksi</a>
-            <a class="rounded-lg bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface-variant" href="#faq">FAQ</a>
-            <a href="<?= e(base_url('/login')) ?>" class="mt-2 rounded-lg bg-primary px-4 py-3 text-center font-semibold text-on-primary">Masuk Sistem</a>
+            <a class="rounded-xl bg-slate-100 px-4 py-3 font-semibold text-primary" href="#beranda">Beranda</a>
+            <a class="rounded-xl bg-white border border-slate-100 px-4 py-3 font-semibold text-on-surface-variant" href="#fitur">Fitur</a>
+            <a class="rounded-xl bg-white border border-slate-100 px-4 py-3 font-semibold text-on-surface-variant" href="#cara-kerja">Cara Kerja</a>
+            <a class="rounded-xl bg-white border border-slate-100 px-4 py-3 font-semibold text-on-surface-variant" href="#dashboard">Dashboard</a>
+            <a class="rounded-xl bg-white border border-slate-100 px-4 py-3 font-semibold text-on-surface-variant" href="#prediksi">Prediksi</a>
+            <a class="rounded-xl bg-white border border-slate-100 px-4 py-3 font-semibold text-on-surface-variant" href="#faq">FAQ</a>
+            <a href="<?= e(base_url('/login')) ?>" class="mt-2 rounded-xl bg-primary py-3 text-center font-semibold text-white shadow-glow">Masuk Sistem</a>
         </div>
     </div>
 </header>
@@ -901,25 +520,32 @@ $mascotSectionTips = [
 
     <!-- HERO -->
     <section id="beranda" class="relative overflow-hidden gradient-hero">
-        <div class="absolute inset-0 z-0 opacity-20">
+        <div class="bg-blob-indigo top-10 left-10 float-shape-indigo"></div>
+        <div class="bg-blob-teal bottom-10 right-10 float-shape-teal"></div>
+        <div class="absolute inset-0 z-0 opacity-15">
             <img class="h-full w-full object-cover" alt="Hamparan lahan pangan Lhokseumawe" src="<?= e($heroImage) ?>">
         </div>
-        <div class="absolute inset-0 z-10 bg-gradient-to-b from-background/85 via-background/65 to-background"></div>
-        <div class="hero-dot-grid absolute inset-0 z-[11] opacity-60 pointer-events-none"></div>
+        <div class="absolute inset-0 z-10 bg-gradient-to-b from-background/90 via-background/70 to-background"></div>
+        <div class="hero-dot-grid absolute inset-0 z-[11] opacity-70 pointer-events-none"></div>
         <div class="relative z-20 mx-auto grid w-full max-w-screen-2xl grid-cols-1 gap-12 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:py-28">
             <div class="reveal lg:col-span-7">
+                <!-- Glowing Live Badge -->
+                <div class="inline-flex items-center gap-2 rounded-full bg-secondary-container px-3.5 py-1 text-xs font-bold text-on-secondary-container ring-1 ring-secondary/20 mb-6 badge-live-pulse">
+                    <span class="h-2 w-2 rounded-full bg-secondary"></span>
+                    Sistem Prediksi Aktif
+                </div>
                 <h1 class="mb-6 text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] text-primary sm:text-5xl lg:text-[4rem]">
-                    Forecasting Stok Pangan <span class="text-secondary">Cerdas</span><br class="hidden lg:block"> untuk Ketahanan Kota Lhokseumawe
+                    Forecasting Stok Pangan <span class="bg-gradient-to-r from-secondary to-teal-600 bg-clip-text text-transparent">Cerdas</span><br class="hidden lg:block"> untuk Lhokseumawe
                 </h1>
                 <p class="mb-8 max-w-2xl text-lg leading-relaxed text-on-surface-variant">
-                    Platform prediksi stok pangan berbasis algoritma <strong class="text-primary font-semibold">Long Short-Term Memory (LSTM)</strong> yang membantu Dinas Pangan Kota Lhokseumawe memantau ketersediaan komoditas strategis secara akurat dan real-time.
+                    Platform prediksi stok pangan berbasis algoritma <strong class="text-primary font-bold">Long Short-Term Memory (LSTM)</strong> yang membantu Dinas Pangan Kota Lhokseumawe memantau ketersediaan komoditas strategis secara akurat dan real-time.
                 </p>
                 <div class="mb-10 flex flex-wrap gap-3">
-                    <a href="#dashboard" class="interactive-button flex items-center gap-2 rounded-lg bg-primary px-7 py-3.5 font-bold text-on-primary shadow-glow transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_48px_rgba(0,51,102,0.28)]" data-magnetic>
+                    <a href="#dashboard" class="interactive-button flex items-center gap-2 rounded-xl bg-primary px-7 py-3.5 font-bold text-white shadow-glow hover:bg-gradient-to-r hover:from-primary hover:to-secondary transition-all hover:-translate-y-0.5" data-magnetic>
                         <span class="material-symbols-outlined text-[20px]">trending_up</span>
                         Lihat Dashboard
                     </a>
-                    <a href="#cara-kerja" class="interactive-button flex items-center gap-2 rounded-lg border-2 border-primary/25 bg-white/70 px-7 py-3.5 font-bold text-primary backdrop-blur-sm transition-all hover:bg-white hover:border-primary/40" data-magnetic>
+                    <a href="#cara-kerja" class="interactive-button flex items-center gap-2 rounded-xl border border-slate-200 bg-white/80 px-7 py-3.5 font-bold text-primary backdrop-blur-sm transition-all hover:bg-white hover:border-slate-300" data-magnetic>
                         <span class="material-symbols-outlined text-[20px]">play_circle</span>
                         Cara Kerja
                     </a>
@@ -927,66 +553,80 @@ $mascotSectionTips = [
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="hero-stat-pill">
                         <span class="material-symbols-outlined text-secondary text-[18px]">verified</span>
-                        <span class="font-bold text-primary"><?= e(number_format($accuracyPercent, 2, '.', '')) ?>%</span>
+                        <span class="font-bold text-primary font-outfit text-base"><?= e(number_format($accuracyPercent, 2, '.', '')) ?>%</span>
                         <span class="text-on-surface-variant">akurasi</span>
                     </div>
                     <div class="hero-stat-pill">
                         <span class="material-symbols-outlined text-primary text-[18px]">inventory_2</span>
-                        <span class="font-bold text-primary"><?= e((string) $komoditasTotal) ?></span>
+                        <span class="font-bold text-primary font-outfit text-base"><?= e((string) $komoditasTotal) ?></span>
                         <span class="text-on-surface-variant">komoditas</span>
                     </div>
                     <div class="hero-stat-pill">
                         <span class="material-symbols-outlined text-primary text-[18px]">database</span>
-                        <span class="font-bold text-primary"><?= e(number_format((float) $stokSummary['total_records'], 0, '.', '.')) ?></span>
+                        <span class="font-bold text-primary font-outfit text-base"><?= e(number_format((float) $stokSummary['total_records'], 0, '.', '.')) ?></span>
                         <span class="text-on-surface-variant">data historis</span>
                     </div>
                 </div>
             </div>
             <div class="reveal lg:col-span-5">
-                <div class="hero-float relative rounded-2xl border border-white/70 bg-white/85 p-6 shadow-panel backdrop-blur-xl">
+                <div class="hero-float relative rounded-3xl border border-white/80 bg-white/70 p-6 shadow-panel backdrop-blur-xl">
                     <!-- Card header -->
                     <div class="mb-5 flex items-center justify-between gap-3">
                         <div>
-                            <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-on-surface-variant">Model Terbaik · Forecast Terbaru</p>
+                            <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Model Terbaik · Terupdate</p>
                             <h3 class="mt-0.5 text-xl font-extrabold text-primary"><?= e((string) ($bestRun['komoditas'] ?? 'N/A')) ?></h3>
                         </div>
-                        <span class="flex-shrink-0 rounded-full bg-secondary-container px-3 py-1 text-[11px] font-bold text-on-secondary-container ring-1 ring-secondary/20">
+                        <span class="flex-shrink-0 rounded-full bg-secondary-container px-3 py-1 text-[10px] font-bold text-on-secondary-container ring-1 ring-secondary/20">
                             <span class="material-symbols-outlined text-[13px] align-[-3px]">auto_awesome</span> Best Model
                         </span>
                     </div>
                     <!-- Metric grid -->
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="group rounded-xl bg-gradient-to-br from-surface-container-low to-surface-container-lowest p-4 ring-1 ring-outline-variant/20 transition hover:ring-primary/20">
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">RMSE</p>
-                            <p class="mt-1 font-mono text-2xl font-extrabold tabular-nums text-primary"><?= e(number_format((float) ($bestRun['rmse'] ?? 0), 2, '.', '')) ?></p>
+                        <div class="group rounded-2xl bg-white/50 border border-slate-100 p-4 transition hover:bg-white hover:border-primary/20">
+                            <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">RMSE</p>
+                            <p class="mt-1 font-outfit text-2xl font-extrabold tabular-nums text-primary"><?= e(number_format((float) ($bestRun['rmse'] ?? 0), 2, '.', '')) ?></p>
                         </div>
-                        <div class="group rounded-xl bg-gradient-to-br from-surface-container-low to-surface-container-lowest p-4 ring-1 ring-outline-variant/20 transition hover:ring-primary/20">
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">MAE</p>
-                            <p class="mt-1 font-mono text-2xl font-extrabold tabular-nums text-primary"><?= e(number_format((float) ($bestRun['mae'] ?? 0), 2, '.', '')) ?></p>
+                        <div class="group rounded-2xl bg-white/50 border border-slate-100 p-4 transition hover:bg-white hover:border-primary/20">
+                            <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">MAE</p>
+                            <p class="mt-1 font-outfit text-2xl font-extrabold tabular-nums text-primary"><?= e(number_format((float) ($bestRun['mae'] ?? 0), 2, '.', '')) ?></p>
                         </div>
-                        <div class="group rounded-xl bg-gradient-to-br from-surface-container-low to-surface-container-lowest p-4 ring-1 ring-outline-variant/20 transition hover:ring-primary/20">
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">MAPE</p>
-                            <p class="mt-1 font-mono text-2xl font-extrabold tabular-nums text-primary"><?= e(number_format((float) ($bestRun['mape'] ?? 0), 2, '.', '')) ?><span class="text-sm font-medium text-on-surface-variant">%</span></p>
+                        <div class="group rounded-2xl bg-white/50 border border-slate-100 p-4 transition hover:bg-white hover:border-primary/20">
+                            <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">MAPE</p>
+                            <p class="mt-1 font-outfit text-2xl font-extrabold tabular-nums text-primary"><?= e(number_format((float) ($bestRun['mape'] ?? 0), 2, '.', '')) ?><span class="text-sm font-medium text-slate-400">%</span></p>
                         </div>
-                        <div class="group rounded-xl bg-gradient-to-br from-surface-container-low to-surface-container-lowest p-4 ring-1 ring-outline-variant/20 transition hover:ring-primary/20">
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Best Epoch</p>
-                            <p class="mt-1 font-mono text-2xl font-extrabold tabular-nums text-primary"><?= e($bestEpoch) ?></p>
+                        <div class="group rounded-2xl bg-white/50 border border-slate-100 p-4 transition hover:bg-white hover:border-primary/20">
+                            <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Best Epoch</p>
+                            <p class="mt-1 font-outfit text-2xl font-extrabold tabular-nums text-primary"><?= e($bestEpoch) ?></p>
                         </div>
                     </div>
                     <!-- Footer info -->
-                    <div class="mt-4 flex items-center gap-3 rounded-xl bg-primary-container/20 p-4">
-                        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <div class="mt-4 flex items-center gap-3 rounded-2xl bg-slate-50 border border-slate-100 p-4">
+                        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                             <span class="material-symbols-outlined text-[20px]">calendar_today</span>
                         </span>
                         <div>
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Data Aktual Terakhir</p>
-                            <p class="font-semibold text-primary"><?= e((string) $stokSummary['latest_date']) ?></p>
+                            <p class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Data Aktual Terakhir</p>
+                            <p class="font-bold text-primary text-sm"><?= e((string) $stokSummary['latest_date']) ?></p>
                         </div>
                     </div>
-                    <!-- Accuracy badge -->
-                    <div class="mt-3 flex items-center justify-between rounded-xl bg-secondary-container/40 px-4 py-2.5">
-                        <span class="text-xs font-semibold text-on-secondary-container">Akurasi Rata-rata</span>
-                        <span class="font-mono text-lg font-extrabold tabular-nums text-secondary"><?= e(number_format($accuracyPercent, 1, '.', '')) ?>%</span>
+                    <!-- Circular Accuracy Meter -->
+                    <div class="mt-3 flex items-center justify-between rounded-2xl bg-teal-50/50 border border-teal-500/10 p-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-600">
+                                <span class="material-symbols-outlined text-[20px]">insights</span>
+                            </span>
+                            <div>
+                                <p class="text-[9px] font-extrabold uppercase tracking-wider text-teal-700">Akurasi Rata-rata</p>
+                                <p class="text-xs font-semibold text-slate-600">Model Converged</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-center justify-center h-12 w-12">
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="24" cy="24" r="19" stroke="rgba(13, 148, 136, 0.08)" stroke-width="3" fill="transparent"/>
+                                <circle cx="24" cy="24" r="19" stroke="#0d9488" stroke-width="3" fill="transparent" stroke-dasharray="119.38" stroke-dashoffset="<?= e((string) (119.38 - (119.38 * $accuracyPercent) / 100)) ?>"/>
+                            </svg>
+                            <span class="absolute text-[10px] font-extrabold text-teal-700 font-outfit"><?= e(number_format($accuracyPercent, 0)) ?>%</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -994,67 +634,68 @@ $mascotSectionTips = [
     </section>
 
     <!-- STATS BAR -->
-    <section class="border-y border-outline-variant/20 bg-surface-container-lowest">
+    <section class="border-y border-slate-200/50 bg-white relative z-20 shadow-sm">
         <div class="mx-auto grid max-w-screen-2xl grid-cols-2 gap-0 px-5 sm:px-8 md:grid-cols-4">
-            <div class="stat-card-bar reveal flex items-center gap-4 border-r border-outline-variant/15 px-6 py-10 last:border-r-0">
-                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-primary/8 text-primary ring-1 ring-primary/10">
+            <div class="stat-card-bar reveal flex items-center gap-5 border-r border-slate-100 px-6 py-12 last:border-r-0">
+                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/5 shadow-sm">
                     <span class="material-symbols-outlined text-3xl">inventory_2</span>
                 </span>
                 <div>
-                    <strong class="stat-number block font-mono text-3xl font-extrabold tabular-nums text-primary" data-count="<?= e((string) $komoditasTotal) ?>">0</strong>
-                    <p class="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Komoditas Dipantau</p>
+                    <strong class="stat-number block font-outfit text-3xl font-extrabold tabular-nums text-primary" data-count="<?= e((string) $komoditasTotal) ?>">0</strong>
+                    <p class="mt-1 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Komoditas Dipantau</p>
                 </div>
             </div>
-            <div class="stat-card-bar reveal flex items-center gap-4 border-r border-outline-variant/15 px-6 py-10 last:border-r-0">
-                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary/15 to-secondary/8 text-secondary ring-1 ring-secondary/10">
+            <div class="stat-card-bar reveal flex items-center gap-5 border-r border-slate-100 px-6 py-12 last:border-r-0">
+                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-teal-500/10 text-secondary ring-1 ring-teal-500/5 shadow-sm">
                     <span class="material-symbols-outlined text-3xl">database</span>
                 </span>
                 <div>
-                    <strong class="stat-number block font-mono text-3xl font-extrabold tabular-nums text-primary" data-count="<?= e((string) $stokSummary['total_records']) ?>">0</strong>
-                    <p class="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Data Stok Historis</p>
+                    <strong class="stat-number block font-outfit text-3xl font-extrabold tabular-nums text-primary" data-count="<?= e((string) $stokSummary['total_records']) ?>">0</strong>
+                    <p class="mt-1 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Data Stok Historis</p>
                 </div>
             </div>
-            <div class="stat-card-bar reveal flex items-center gap-4 border-r border-outline-variant/15 px-6 py-10 last:border-r-0">
-                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-primary/8 text-primary ring-1 ring-primary/10">
+            <div class="stat-card-bar reveal flex items-center gap-5 border-r border-slate-100 px-6 py-12 last:border-r-0">
+                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/5 shadow-sm">
                     <span class="material-symbols-outlined text-3xl">model_training</span>
                 </span>
                 <div>
-                    <strong class="stat-number block font-mono text-3xl font-extrabold tabular-nums text-primary" data-count="<?= e((string) $batchStats['batch_count']) ?>">0</strong>
-                    <p class="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Batch Model</p>
+                    <strong class="stat-number block font-outfit text-3xl font-extrabold tabular-nums text-primary" data-count="<?= e((string) $batchStats['batch_count']) ?>">0</strong>
+                    <p class="mt-1 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Batch Model LSTM</p>
                 </div>
             </div>
-            <div class="stat-card-bar reveal flex items-center gap-4 px-6 py-10">
-                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#fff1c2] to-[#fde68a] text-[#8a5a00] ring-1 ring-[#f59e0b]/20">
+            <div class="stat-card-bar reveal flex items-center gap-5 px-6 py-12">
+                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-teal-50/70 text-teal-700 ring-1 ring-teal-500/10 shadow-sm">
                     <span class="material-symbols-outlined text-3xl">verified</span>
                 </span>
                 <div>
-                    <strong class="block font-mono text-3xl font-extrabold tabular-nums text-primary"><?= e(number_format($accuracyPercent, 1, '.', '')) ?>%</strong>
-                    <p class="mt-0.5 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Akurasi Rata-rata</p>
+                    <strong class="block font-outfit text-3xl font-extrabold tabular-nums text-primary"><?= e(number_format($accuracyPercent, 1, '.', '')) ?>%</strong>
+                    <p class="mt-1 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Akurasi Rata-rata</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- FEATURES -->
-    <section id="fitur" class="bg-surface py-24">
-        <div class="mx-auto max-w-screen-2xl px-5 sm:px-8">
+    <section id="fitur" class="bg-slate-50 py-24 relative overflow-hidden">
+        <div class="bg-blob-indigo top-40 right-10 opacity-10"></div>
+        <div class="mx-auto max-w-screen-2xl px-5 sm:px-8 relative z-10">
             <div class="reveal mx-auto mb-16 max-w-3xl text-center">
-                <p class="mb-2 text-xs font-bold uppercase tracking-[0.25em] label-gradient">Fitur Unggulan</p>
+                <p class="mb-2.5 text-xs font-extrabold uppercase tracking-[0.25em] label-gradient">Fitur Unggulan</p>
                 <div class="accent-underline mb-5"></div>
-                <h2 class="mb-5 text-4xl font-bold text-primary sm:text-5xl">Semua yang Anda Butuhkan<br class="hidden sm:block"> untuk Memantau Stok Pangan</h2>
-                <p class="text-lg leading-relaxed text-on-surface-variant">Sistem dirancang khusus untuk mendukung pengambilan keputusan berbasis data pada Dinas Pangan Kota Lhokseumawe.</p>
+                <h2 class="mb-5 text-4xl font-extrabold text-primary sm:text-5xl tracking-tight">Teknologi Cerdas untuk<br class="hidden sm:block"> Monitoring Stok Pangan</h2>
+                <p class="text-lg text-on-surface-variant leading-relaxed">Sistem dirancang khusus untuk mendukung pengambilan keputusan berbasis data yang cepat dan presisi pada Dinas Pangan Kota Lhokseumawe.</p>
             </div>
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <?php foreach ($features as $feature): ?>
-                    <div class="feature-card-v2 stagger-item reveal rounded-2xl p-8">
-                        <span class="feature-icon-grad mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl text-primary">
-                            <span class="material-symbols-outlined text-3xl"><?= e($feature['icon']) ?></span>
+                    <div class="feature-card-v2 hover-lift card-glow-primary stagger-item reveal rounded-3xl p-8 bg-white border border-slate-100 shadow-panel">
+                        <span class="feature-icon-grad mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl text-primary transition-transform duration-300">
+                            <span class="material-symbols-outlined text-3xl transition-transform duration-300 group-hover:rotate-12"><?= e($feature['icon']) ?></span>
                         </span>
-                        <h3 class="mb-3 text-xl font-bold text-primary"><?= e($feature['title']) ?></h3>
-                        <p class="leading-relaxed text-on-surface-variant"><?= e($feature['description']) ?></p>
-                        <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-secondary">
-                            <span class="h-1 w-4 rounded-full bg-secondary"></span>
-                            <span class="h-1 w-2 rounded-full bg-secondary/40"></span>
+                        <h3 class="mb-3 text-xl font-bold text-primary tracking-tight"><?= e($feature['title']) ?></h3>
+                        <p class="leading-relaxed text-on-surface-variant text-sm"><?= e($feature['description']) ?></p>
+                        <div class="mt-6 flex items-center gap-1.5 text-xs font-bold text-secondary">
+                            <span class="h-1.5 w-5 rounded-full bg-secondary"></span>
+                            <span class="h-1.5 w-1.5 rounded-full bg-secondary/35"></span>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -1063,27 +704,28 @@ $mascotSectionTips = [
     </section>
 
     <!-- HOW IT WORKS -->
-    <section id="cara-kerja" class="bg-surface-container-low py-24">
-        <div class="mx-auto max-w-screen-2xl px-5 sm:px-8">
+    <section id="cara-kerja" class="bg-white py-24 relative overflow-hidden">
+        <div class="bg-blob-teal bottom-10 left-10 opacity-10"></div>
+        <div class="mx-auto max-w-screen-2xl px-5 sm:px-8 relative z-10">
             <div class="reveal mx-auto mb-16 max-w-3xl text-center">
-                <p class="mb-2 text-xs font-bold uppercase tracking-[0.25em] label-gradient">Alur Sistem</p>
+                <p class="mb-2.5 text-xs font-extrabold uppercase tracking-[0.25em] label-gradient">Alur Jaringan LSTM</p>
                 <div class="accent-underline mb-5"></div>
-                <h2 class="mb-5 text-4xl font-bold text-primary sm:text-5xl">Bagaimana Sistem Bekerja</h2>
-                <p class="text-lg leading-relaxed text-on-surface-variant">Dari pengumpulan data hingga publikasi forecast, semua tahapan berjalan otomatis dan terukur.</p>
+                <h2 class="mb-5 text-4xl font-extrabold text-primary sm:text-5xl tracking-tight">Bagaimana Sistem Bekerja</h2>
+                <p class="text-lg text-on-surface-variant leading-relaxed">Dari pengumpulan data hingga publikasi forecast, semua tahapan berjalan secara otomatis, terintegrasi, dan terukur.</p>
             </div>
             <div class="relative grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 <?php foreach ($steps as $index => $step): ?>
-                    <div class="step-wrapper stagger-item reveal relative rounded-2xl bg-surface-container-lowest p-8 pt-10 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-panel">
-                        <div class="step-number-badge"><?= e((string) ($index + 1)) ?></div>
+                    <div class="step-wrapper stagger-item reveal relative rounded-3xl bg-slate-50/50 border border-slate-100/80 p-8 pt-12 text-center transition hover:-translate-y-1 hover:shadow-panel hover:bg-white duration-300">
+                        <div class="step-number-badge font-outfit"><?= e((string) ($index + 1)) ?></div>
                         <?php if ($index < count($steps) - 1): ?>
-                            <div class="step-h-connector"></div>
+                            <div class="step-connector-animated"></div>
                         <?php endif; ?>
-                        <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-glow">
+                        <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary text-white shadow-glow">
                             <span class="material-symbols-outlined text-3xl"><?= e($step['icon']) ?></span>
                         </div>
-                        <div class="mb-2 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Tahap <?= e((string) ($index + 1)) ?></div>
-                        <h3 class="mb-3 text-lg font-bold text-primary"><?= e($step['title']) ?></h3>
-                        <p class="text-sm leading-relaxed text-on-surface-variant"><?= e($step['description']) ?></p>
+                        <div class="mb-2 text-[9px] font-extrabold uppercase tracking-widest text-slate-400">Tahap <?= e((string) ($index + 1)) ?></div>
+                        <h3 class="mb-3 text-lg font-bold text-primary tracking-tight"><?= e($step['title']) ?></h3>
+                        <p class="text-xs leading-relaxed text-on-surface-variant"><?= e($step['description']) ?></p>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -1091,58 +733,59 @@ $mascotSectionTips = [
     </section>
 
     <!-- DASHBOARD PREVIEW -->
-    <section id="dashboard" class="bg-surface py-24">
-        <div class="mx-auto max-w-screen-2xl px-5 sm:px-8">
+    <section id="dashboard" class="bg-slate-50 py-24 relative overflow-hidden">
+        <div class="bg-blob-indigo top-10 left-1/3 opacity-10"></div>
+        <div class="mx-auto max-w-screen-2xl px-5 sm:px-8 relative z-10">
             <div class="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div class="reveal max-w-2xl">
-                    <p class="mb-2 text-xs font-bold uppercase tracking-[0.25em] label-gradient">Live Dashboard</p>
+                    <p class="mb-2 text-xs font-extrabold uppercase tracking-[0.25em] label-gradient">Live Dashboard</p>
                     <div class="accent-underline mb-5 !mx-0"></div>
-                    <h2 class="mb-4 text-4xl font-bold text-primary sm:text-5xl">Pratinjau Forecast Terkini</h2>
-                    <p class="text-lg leading-relaxed text-on-surface-variant">Data langsung dari batch terbaru. Angka-angka di bawah ini mencerminkan kondisi aktual database forecasting.</p>
+                    <h2 class="mb-4 text-4xl font-extrabold text-primary sm:text-5xl tracking-tight">Pratinjau Forecast Terkini</h2>
+                    <p class="text-lg text-on-surface-variant leading-relaxed">Data langsung dari batch training terbaru. Angka-angka di bawah ini mencerminkan kondisi riil database forecasting.</p>
                 </div>
-                <div class="reveal flex flex-wrap items-center gap-2 text-sm">
-                    <span class="rounded-lg border border-outline-variant/20 bg-surface-container-lowest px-4 py-2 font-medium">
-                        Batch: <strong class="text-primary"><?= e((string) ($latestBatch['batch_code'] ?? '-')) ?></strong>
+                <div class="reveal flex flex-wrap items-center gap-2.5 text-xs">
+                    <span class="rounded-xl border border-slate-200 bg-white px-4.5 py-2.5 font-bold shadow-sm">
+                        Batch: <strong class="text-primary font-outfit"><?= e((string) ($latestBatch['batch_code'] ?? '-')) ?></strong>
                     </span>
-                    <span class="rounded-lg border border-outline-variant/20 bg-surface-container-lowest px-4 py-2 font-medium">
-                        Tanggal Data: <strong class="text-primary"><?= e((string) $stokSummary['latest_date']) ?></strong>
+                    <span class="rounded-xl border border-slate-200 bg-white px-4.5 py-2.5 font-bold shadow-sm">
+                        Tanggal Data: <strong class="text-primary font-outfit"><?= e((string) $stokSummary['latest_date']) ?></strong>
                     </span>
                 </div>
             </div>
 
             <!-- Forecast Cards Grid -->
-            <div class="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mb-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <?php if ($featuredCards !== []): ?>
                     <?php foreach ($featuredCards as $card): ?>
-                        <div class="metric-card metric-card-v2 reveal rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-sm" data-tilt>
-                            <div class="mb-4 flex items-start justify-between gap-3">
-                                <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <div class="metric-card hover-lift card-glow-primary reveal rounded-3xl border border-slate-100 bg-white p-6 shadow-panel" data-tilt>
+                            <div class="mb-5 flex items-start justify-between gap-3">
+                                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/5 shadow-sm">
                                     <span class="material-symbols-outlined"><?= e($card['icon']) ?></span>
                                 </span>
-                                <span class="rounded-full px-3 py-1 text-[10px] font-bold uppercase <?= e($card['statusBadge']) ?>">
+                                <span class="rounded-full px-3 py-1 text-[9px] font-extrabold uppercase ring-1 <?= e($card['statusBadge']) ?>">
                                     <?= e($card['status']) ?>
                                 </span>
                             </div>
-                            <p class="mb-1 text-xs font-bold uppercase tracking-widest text-on-surface-variant">Forecast</p>
-                            <h3 class="mb-1 text-lg font-bold text-primary"><?= e($card['commodity']) ?></h3>
-                            <p class="text-3xl font-extrabold tracking-tight text-primary">
+                            <p class="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Forecast</p>
+                            <h3 class="mb-1.5 text-xl font-bold text-primary tracking-tight"><?= e($card['commodity']) ?></h3>
+                            <p class="text-3xl font-extrabold tracking-tight text-primary font-outfit">
                                 <?= e($card['value']) ?>
-                                <span class="text-sm font-medium text-on-surface-variant"><?= e($card['unit']) ?></span>
+                                <span class="text-xs font-semibold text-slate-400"><?= e($card['unit']) ?></span>
                             </p>
-                            <div class="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-surface-container-highest">
-                                <div class="progress-bar h-full <?= e($card['statusBar']) ?>" data-progress="<?= e((string) $card['ratio']) ?>" style="width: <?= e((string) $card['ratio']) ?>%"></div>
+                            <div class="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                                <div class="progress-bar h-full <?= e($card['statusBar']) ?> rounded-full" data-progress="<?= e((string) $card['ratio']) ?>" style="width: <?= e((string) $card['ratio']) ?>%"></div>
                             </div>
-                            <div class="mt-4 flex items-center justify-between text-xs text-on-surface-variant">
-                                <span class="flex items-center gap-1 <?= e($card['changeColor']) ?>">
+                            <div class="mt-4 flex items-center justify-between text-xs text-slate-500 font-medium">
+                                <span class="flex items-center gap-1 <?= e($card['changeColor']) ?> font-bold">
                                     <span class="material-symbols-outlined text-sm"><?= e($card['changeIcon']) ?></span>
                                     <?= e($card['changeLabel']) ?>
                                 </span>
-                                <span>MAPE <strong class="text-primary"><?= e($card['mape']) ?>%</strong></span>
+                                <span>MAPE <strong class="text-primary font-outfit font-bold"><?= e($card['mape']) ?>%</strong></span>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <div class="col-span-full rounded-xl bg-surface-container-lowest p-10 text-center text-on-surface-variant">
+                    <div class="col-span-full rounded-3xl border border-slate-100 bg-white p-12 text-center text-on-surface-variant shadow-panel">
                         Belum ada forecast yang tersedia. Jalankan batch training LSTM pada panel admin terlebih dahulu.
                     </div>
                 <?php endif; ?>
@@ -1150,53 +793,54 @@ $mascotSectionTips = [
 
             <!-- Chart + Status Overview -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div class="reveal rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 shadow-sm lg:col-span-2">
+                <div class="reveal rounded-3xl border border-slate-100 bg-white p-6 shadow-panel lg:col-span-2 relative overflow-hidden">
                     <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h3 class="text-lg font-bold text-primary">Grafik Forecast Lintas Komoditas</h3>
-                            <p class="text-sm text-on-surface-variant">Horizon prediksi 1 hari hingga 365 hari ke depan.</p>
+                            <h3 class="text-lg font-bold text-primary tracking-tight">Grafik Forecast Lintas Komoditas</h3>
+                            <p class="text-xs text-on-surface-variant">Horizon prediksi harian hingga 365 hari ke depan.</p>
                         </div>
-                        <div class="flex items-center gap-3 text-xs font-bold text-on-surface-variant">
-                            <span class="flex items-center gap-1"><span class="h-3 w-3 rounded-full bg-primary"></span> Predicted</span>
+                        <div class="flex items-center gap-3 text-xs font-bold text-slate-500">
+                            <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-primary/20"></span> Predicted</span>
                         </div>
                     </div>
-                    <div class="chart-shell relative min-h-[320px] rounded-xl bg-surface-container-low p-4 sm:p-6">
+                    <div class="chart-shell relative min-h-[320px] rounded-2xl bg-slate-50/50 border border-slate-100/50 p-4 sm:p-6">
                         <div id="chartSkeleton" class="skeleton-shell absolute inset-0 z-[1] grid grid-cols-1 gap-4 p-6">
-                            <div class="skeleton-block h-6 w-40 rounded"></div>
-                            <div class="skeleton-block h-full min-h-[220px] rounded-xl"></div>
+                            <div class="skeleton-block h-6 w-40 rounded-lg"></div>
+                            <div class="skeleton-block h-full min-h-[220px] rounded-2xl"></div>
                         </div>
                         <canvas id="forecastSummaryChart" class="!h-[320px] !w-full"></canvas>
                     </div>
                 </div>
-                <div class="reveal flex flex-col justify-between rounded-xl bg-primary p-8 text-on-primary shadow-glow">
-                    <div>
-                        <h3 class="mb-5 text-lg font-bold">Status Model</h3>
+                <div class="reveal flex flex-col justify-between rounded-3xl bg-gradient-to-br from-primary to-primary-container p-8 text-white shadow-glow relative overflow-hidden">
+                    <div class="bg-white/5 absolute -right-10 -top-10 h-32 w-32 rounded-full pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <h3 class="mb-6 text-lg font-bold tracking-tight">Ringkasan Status Model</h3>
                         <div class="space-y-4 text-sm">
                             <div class="flex items-center justify-between border-b border-white/10 pb-3">
-                                <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-secondary-fixed"></span>Safe</span>
-                                <strong><?= e((string) $safeCount) ?></strong>
+                                <span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-secondary ring-4 ring-secondary/20"></span>Safe (MAPE &le; 10%)</span>
+                                <strong class="font-outfit text-base"><?= e((string) $safeCount) ?></strong>
                             </div>
                             <div class="flex items-center justify-between border-b border-white/10 pb-3">
-                                <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-[#ffd77c]"></span>Watchlist</span>
-                                <strong><?= e((string) $watchCount) ?></strong>
+                                <span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-[#f59e0b] ring-4 ring-[#f59e0b]/20"></span>Watchlist (10% - 20%)</span>
+                                <strong class="font-outfit text-base"><?= e((string) $watchCount) ?></strong>
                             </div>
                             <div class="flex items-center justify-between border-b border-white/10 pb-3">
-                                <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-[#ff9a9a]"></span>Warning</span>
-                                <strong><?= e((string) $warningCount) ?></strong>
+                                <span class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-error ring-4 ring-error/20"></span>Warning (MAPE &gt; 20%)</span>
+                                <strong class="font-outfit text-base"><?= e((string) $warningCount) ?></strong>
                             </div>
                             <div class="flex items-center justify-between border-b border-white/10 pb-3">
-                                <span>Train/Test</span>
-                                <strong><?= e($trainSamples) ?>/<?= e($testSamples) ?></strong>
+                                <span class="text-white/70">Train / Test Samples</span>
+                                <strong class="font-outfit text-base"><?= e($trainSamples) ?> / <?= e($testSamples) ?></strong>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span>Best Epoch</span>
-                                <strong><?= e($bestEpoch) ?></strong>
+                                <span class="text-white/70">Best Training Epoch</span>
+                                <strong class="font-outfit text-base"><?= e($bestEpoch) ?></strong>
                             </div>
                         </div>
                     </div>
-                    <a href="<?= e(base_url('/login')) ?>" class="interactive-button mt-8 flex items-center justify-center gap-2 rounded-lg bg-on-primary py-3 text-xs font-bold uppercase tracking-widest text-primary" data-magnetic>
+                    <a href="<?= e(base_url('/login')) ?>" class="interactive-button mt-8 flex items-center justify-center gap-2 rounded-xl bg-white py-3.5 text-xs font-extrabold uppercase tracking-widest text-primary shadow-lg transition-transform hover:-translate-y-0.5" data-magnetic>
                         Buka Panel Admin
-                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        <span class="material-symbols-outlined text-sm font-bold">arrow_forward</span>
                     </a>
                 </div>
             </div>
@@ -1498,10 +1142,9 @@ $mascotSectionTips = [
     </section>
 
 </main>
-
 <!-- MASCOT Si Padi Cerdas -->
 <div class="mascot-shell" id="mascotShell">
-    <div class="mascot-bubble is-hidden" id="mascotBubble">Halo, saya Si Padi Cerdas. Ada yang bisa saya bantu?</div>
+    <div class="mascot-bubble is-hidden" id="mascotBubble">Halo! Ada yang bisa saya bantu tentang sistem forecasting?</div>
     <div class="mascot-card is-hidden" id="mascotCard" role="dialog" aria-labelledby="mascotTitle">
         <div class="mascot-header">
             <div class="mascot-title-wrap">
@@ -1509,8 +1152,8 @@ $mascotSectionTips = [
                     <img id="mascotAvatarFace" src="<?= e($mascotFaces['curious']) ?>" alt="Ekspresi maskot Si Padi">
                 </div>
                 <div>
-                    <div class="mascot-status">Asisten Interaktif</div>
-                    <strong id="mascotTitle" class="block text-sm">Si Padi Cerdas</strong>
+                    <div class="mascot-status font-outfit">Asisten Interaktif</div>
+                    <strong id="mascotTitle" class="block text-sm tracking-tight font-bold">Si Padi Cerdas</strong>
                 </div>
             </div>
             <div class="mascot-actions">
@@ -1522,13 +1165,18 @@ $mascotSectionTips = [
                 </button>
             </div>
         </div>
-        <div class="mascot-body" id="mascotBody">
-            <div class="mascot-tip" id="mascotTipBox">Tip: saya akan mengganti ekspresi saat Anda menjelajahi setiap bagian landing page.</div>
-            <div class="mascot-message" id="mascotMessage">
-                Halo, saya Si Padi Cerdas. Saya bisa menjawab pertanyaan seputar sistem forecasting stok pangan, termasuk akurasi model, komoditas yang dipantau, dan alur kerja LSTM. Silakan pilih pertanyaan cepat atau ketik pertanyaan Anda sendiri.
+        <div class="mascot-body custom-scrollbar" id="mascotBody">
+            <div class="mascot-tip" id="mascotTipBox">Tip: saya akan mengubah ekspresi ketika Anda berpindah bagian halaman.</div>
+            
+            <!-- Chat Log container representing real messages -->
+            <div id="mascotChatLog" class="flex flex-col gap-3 overflow-y-auto pr-1 flex-1 custom-scrollbar min-h-[160px] max-h-[220px]">
+                <div class="mascot-message-bot">
+                    Halo! Saya <strong>Si Padi Cerdas</strong>. Saya siap menjawab pertanyaan seputar sistem prediksi stok pangan Lhokseumawe ini. Silakan pilih pertanyaan di bawah atau ketik langsung pertanyaan Anda!
+                </div>
             </div>
-            <p class="mb-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Pertanyaan Cepat</p>
-            <div class="mascot-chip-row">
+            
+            <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mt-2 mb-1.5">Pertanyaan Cepat</p>
+            <div class="mascot-chip-row custom-scrollbar overflow-x-auto pb-1 flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
                 <?php foreach ($mascotQuickQuestions as $index => $qa): ?>
                     <button type="button" class="mascot-chip" data-mascot-answer="<?= e($qa['answer']) ?>" data-mascot-question="<?= e($qa['question']) ?>">
                         <?= e($qa['question']) ?>
@@ -1537,7 +1185,7 @@ $mascotSectionTips = [
             </div>
         </div>
         <div class="mascot-input-wrap">
-            <input type="text" class="mascot-input" id="mascotInput" placeholder="Tanyakan sesuatu...">
+            <input type="text" class="mascot-input" id="mascotInput" placeholder="Tanyakan tentang LSTM, akurasi...">
             <button type="button" class="mascot-send" id="mascotSend" aria-label="Kirim pertanyaan">
                 <span class="material-symbols-outlined text-base">send</span>
             </button>
@@ -1547,7 +1195,7 @@ $mascotSectionTips = [
         <span class="mascot-avatar is-curious" aria-hidden="true">
             <img id="mascotToggleFace" src="<?= e($mascotFaces['curious']) ?>" alt="Maskot Si Padi Cerdas">
         </span>
-        <span id="mascotToggleLabel">Tanya Si Padi</span>
+        <span id="mascotToggleLabel" class="font-bold">Tanya Si Padi</span>
     </button>
 </div>
 
@@ -1630,21 +1278,28 @@ $mascotSectionTips = [
         const mobileNavPanel = document.getElementById('mobileNavPanel');
 
         if (canvas && labels.length > 0) {
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(15, 59, 117, 0.28)');
+            gradient.addColorStop(1, 'rgba(13, 148, 136, 0.01)');
+
             new Chart(canvas, {
                 type: 'line',
                 data: {
                     labels,
                     datasets: [{
-                        label: 'Forecast Denormalized',
+                        label: 'Prediksi Stok',
                         data: values,
-                        borderColor: '#003366',
-                        backgroundColor: 'rgba(0, 51, 102, 0.10)',
+                        borderColor: '#0f3b75',
+                        backgroundColor: gradient,
                         fill: true,
-                        tension: 0.32,
+                        tension: 0.35,
                         borderWidth: 3,
-                        pointRadius: 3,
-                        pointHoverRadius: 6,
-                        pointBackgroundColor: '#003366'
+                        pointRadius: 4,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#0d9488',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
                     }]
                 },
                 options: {
@@ -1654,24 +1309,28 @@ $mascotSectionTips = [
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#003366',
+                            backgroundColor: '#0f3b75',
+                            titleFont: { size: 13, weight: 'bold', family: 'Plus Jakarta Sans' },
+                            bodyFont: { size: 12, family: 'Plus Jakarta Sans' },
                             padding: 12,
-                            cornerRadius: 8,
+                            cornerRadius: 12,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
                             callbacks: {
                                 title: (items) => items[0] ? `${commodities[items[0].dataIndex]} - ${items[0].label}` : '',
-                                label: (context) => `Forecast: ${Number(context.raw).toLocaleString('id-ID', { maximumFractionDigits: 2 })}`
+                                label: (context) => ` Forecast: ${Number(context.raw).toLocaleString('id-ID', { maximumFractionDigits: 2 })}`
                             }
                         }
                     },
                     scales: {
                         x: {
-                            grid: { color: 'rgba(114, 119, 129, 0.12)' },
-                            ticks: { color: '#424750', maxRotation: 0, autoSkip: true, maxTicksLimit: 6 }
+                            grid: { color: 'rgba(148, 163, 184, 0.06)' },
+                            ticks: { color: '#64748b', maxRotation: 0, autoSkip: true, maxTicksLimit: 6, font: { family: 'Plus Jakarta Sans', weight: 'bold', size: 10 } }
                         },
                         y: {
                             beginAtZero: false,
-                            grid: { color: 'rgba(114, 119, 129, 0.12)' },
-                            ticks: { color: '#424750' }
+                            grid: { color: 'rgba(148, 163, 184, 0.06)' },
+                            ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } }
                         }
                     }
                 }
@@ -1799,7 +1458,7 @@ $mascotSectionTips = [
         const mascotToggle = document.getElementById('mascotToggle');
         const mascotCard = document.getElementById('mascotCard');
         const mascotBubble = document.getElementById('mascotBubble');
-        const mascotMessage = document.getElementById('mascotMessage');
+        const mascotChatLog = document.getElementById('mascotChatLog');
         const mascotTipBox = document.getElementById('mascotTipBox');
         const mascotAvatar = document.getElementById('mascotAvatar');
         const mascotAvatarFace = document.getElementById('mascotAvatarFace');
@@ -1852,7 +1511,12 @@ $mascotSectionTips = [
         const speakText = (text) => {
             if (!('speechSynthesis' in window) || !text) return;
             window.speechSynthesis.cancel();
-            activeUtterance = new SpeechSynthesisUtterance(text);
+            
+            const temp = document.createElement('div');
+            temp.innerHTML = text;
+            const cleanText = temp.textContent || temp.innerText || "";
+            
+            activeUtterance = new SpeechSynthesisUtterance(cleanText);
             loadSpeechVoice();
             if (speechVoice) {
                 activeUtterance.voice = speechVoice;
@@ -1860,7 +1524,7 @@ $mascotSectionTips = [
             } else {
                 activeUtterance.lang = 'id-ID';
             }
-            activeUtterance.rate = 1;
+            activeUtterance.rate = 1.05;
             activeUtterance.pitch = 1.05;
 
             mascotSpeakButton?.classList.add('is-speaking');
@@ -1874,25 +1538,41 @@ $mascotSectionTips = [
             mascotSpeakButton?.classList.remove('is-speaking');
         };
 
-        const typewriteMessage = (text, shouldSpeak = true) => {
-            if (!mascotMessage) return;
+        const appendUserBubble = (text) => {
+            if (!mascotChatLog) return;
+            const msgNode = document.createElement('div');
+            msgNode.className = 'mascot-message-user reveal visible';
+            msgNode.textContent = text;
+            mascotChatLog.appendChild(msgNode);
+            mascotChatLog.scrollTop = mascotChatLog.scrollHeight;
+        };
+
+        const appendBotBubble = (text, shouldSpeak = true) => {
+            if (!mascotChatLog) return;
             if (mascotTypingTimeout) window.clearTimeout(mascotTypingTimeout);
 
-            mascotMessage.innerHTML = '<span class="mascot-typing"><span></span><span></span><span></span></span>';
+            const msgNode = document.createElement('div');
+            msgNode.className = 'mascot-message-bot reveal visible';
+            msgNode.innerHTML = '<span class="mascot-typing"><span></span><span></span><span></span></span>';
+            mascotChatLog.appendChild(msgNode);
+            mascotChatLog.scrollTop = mascotChatLog.scrollHeight;
+
             let i = 0;
-            const delay = Math.max(8, Math.min(32, 1200 / Math.max(text.length, 1)));
+            const delay = Math.max(8, Math.min(24, 1200 / Math.max(text.length, 1)));
 
             const step = () => {
-                if (i === 0) mascotMessage.textContent = '';
+                if (i === 0) msgNode.textContent = '';
                 if (i < text.length) {
-                    mascotMessage.textContent = text.slice(0, i + 1);
+                    msgNode.textContent = text.slice(0, i + 1);
                     i++;
                     mascotTypingTimeout = window.setTimeout(step, delay);
-                } else if (shouldSpeak) {
-                    speakText(text);
+                } else {
+                    msgNode.textContent = text;
+                    if (shouldSpeak) speakText(text);
                 }
+                mascotChatLog.scrollTop = mascotChatLog.scrollHeight;
             };
-            mascotTypingTimeout = window.setTimeout(step, 320);
+            mascotTypingTimeout = window.setTimeout(step, 650);
         };
 
         const findAnswer = (query) => {
@@ -1915,19 +1595,22 @@ $mascotSectionTips = [
 
             if (bestMatch) return bestMatch.answer;
             if (q.includes('halo') || q.includes('hai') || q.includes('hi')) {
-                return 'Halo! Saya Si Padi Cerdas. Silakan tanyakan apa saja tentang sistem forecasting stok pangan ini.';
+                return 'Halo! Saya Si Padi Cerdas. Silakan tanyakan apa saja tentang sistem forecasting stok pangan Lhokseumawe ini.';
             }
             if (q.includes('terima kasih') || q.includes('makasih') || q.includes('thanks')) {
-                return 'Sama-sama. Senang bisa membantu Anda memahami sistem ini.';
+                return 'Sama-sama. Senang bisa membantu Anda memahami sistem ini!';
             }
-            return 'Maaf, saya belum memiliki informasi untuk pertanyaan tersebut. Coba gunakan salah satu pertanyaan cepat di atas atau bertanya tentang akurasi model, komoditas, LSTM, atau dashboard.';
+            return 'Maaf, saya belum memiliki informasi lengkap tentang hal tersebut. Cobalah menanyakan tentang: akurasi model, komoditas, cara kerja LSTM, atau dashboard.';
         };
 
         const askMascot = (question, forcedAnswer = null) => {
+            appendUserBubble(question);
             const answer = forcedAnswer || findAnswer(question);
             setMascotMood('is-excited');
-            typewriteMessage(answer, true);
-            showMascotBubble(answer.length > 100 ? answer.slice(0, 96) + '…' : answer);
+            
+            appendBotBubble(answer, true);
+            showMascotBubble(answer.length > 80 ? answer.slice(0, 76) + '…' : answer);
+            
             window.setTimeout(() => setMascotMood('is-curious'), 3000);
         };
 
@@ -1963,7 +1646,7 @@ $mascotSectionTips = [
         const mascotVisited = window.localStorage.getItem('mascot-first-visit-v2');
         window.setTimeout(() => {
             if (mascotVisited !== 'yes') {
-                showMascotBubble('Halo! Klik saya untuk mulai bertanya tentang sistem forecasting stok pangan.');
+                showMascotBubble('Halo! Klik saya untuk mulai bertanya tentang sistem forecasting.');
                 window.localStorage.setItem('mascot-first-visit-v2', 'yes');
             }
         }, 1400);
@@ -1975,11 +1658,14 @@ $mascotSectionTips = [
         });
         mascotMinimize?.addEventListener('click', () => setMascotOpen(false));
         mascotSpeakButton?.addEventListener('click', () => {
-            const text = mascotMessage?.textContent?.trim() || '';
             if (mascotSpeakButton.classList.contains('is-speaking')) {
                 stopSpeech();
-            } else if (text) {
-                speakText(text);
+            } else {
+                const botBubbles = mascotChatLog.querySelectorAll('.mascot-message-bot');
+                if (botBubbles.length > 0) {
+                    const lastBotText = botBubbles[botBubbles.length - 1].textContent || '';
+                    if (lastBotText) speakText(lastBotText);
+                }
             }
         });
 
@@ -2025,5 +1711,6 @@ $mascotSectionTips = [
         });
     })();
 </script>
+
 </body>
 </html>

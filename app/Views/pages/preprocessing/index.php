@@ -175,6 +175,30 @@ $previewPageNumbers = array_values(array_unique($previewPageNumbers));
                 </section>
             <?php endif; ?>
 
+            <section class="glass-card">
+                <div class="section-copy" style="margin-bottom:16px;"><h2>Export Data Preprocessing</h2><p>Unduh hasil preprocessing dalam format PDF, Excel, atau CSV sesuai kebutuhan analisis lanjutan.</p></div>
+                <div class="export-grid">
+                    <div class="export-box">
+                        <h3>Ringkasan per Komoditas</h3>
+                        <p>Rekap missing value, outlier, jumlah data latih/uji, dan rentang tanggal per komoditas.</p>
+                        <div class="export-actions">
+                            <a class="action-link" href="<?= e(base_url('/preprocessing/export/ringkasan/pdf')) ?>">PDF</a>
+                            <a class="action-link" href="<?= e(base_url('/preprocessing/export/ringkasan/excel')) ?>">Excel</a>
+                            <a class="action-link" href="<?= e(base_url('/preprocessing/export/ringkasan/csv')) ?>">CSV</a>
+                        </div>
+                    </div>
+                    <div class="export-box">
+                        <h3>Data Lengkap</h3>
+                        <p>Seluruh baris hasil preprocessing: stok mentah/bersih, normalisasi, sekuens input, target, dan set data.</p>
+                        <div class="export-actions">
+                            <a class="action-link" href="<?= e(base_url('/preprocessing/export/data-lengkap/pdf')) ?>">PDF</a>
+                            <a class="action-link" href="<?= e(base_url('/preprocessing/export/data-lengkap/excel')) ?>">Excel</a>
+                            <a class="action-link" href="<?= e(base_url('/preprocessing/export/data-lengkap/csv')) ?>">CSV</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="table-card">
                 <div class="section-head">
                     <div class="section-copy">

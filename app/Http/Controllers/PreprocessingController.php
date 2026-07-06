@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\DataPreprocessingLstm;
+use App\Services\ExportResponse;
 use Core\Controller;
 use Core\Session;
 
@@ -70,6 +71,38 @@ final class PreprocessingController extends Controller
             'summaryPage' => 1,
             'previewPage' => 1,
         ]);
+    }
+
+    public function exportSummary(string $format): void
+    {
+        $rows = DataPreprocessingLstm::summaryExportRows();
+        $this->exportRows($rows, $format, 'preprocessing-ringkasan', 'Ringkasan Preprocessing per Komoditas');
+    }
+
+    public function exportDetail(string $format): void
+    {
+        $rows = DataPreprocessingLstm::previewExportRows();
+        $this->exportRows($rows, $format, 'preprocessing-data-lengkap', 'Data Preprocessing LSTM Lengkap');
+    }
+
+    private function exportRows(array $rows, string $format, string $baseFilename, string $title): void
+    {
+        $safeFilename = preg_replace('/[^A-Za-z0-9\-_]+/', '-', strtolower($baseFilename)) ?: 'export';
+
+        if ($format === 'csv') {
+            ExportResponse::downloadCsv($safeFilename . '.csv', $rows);
+        }
+
+        if ($format === 'excel') {
+            ExportResponse::downloadExcel($safeFilename . '.xls', $rows);
+        }
+
+        if ($format === 'pdf') {
+            ExportResponse::downloadPdf($safeFilename . '.pdf', $title, $rows);
+        }
+
+        Session::flash('error', 'Format export yang diminta tidak tersedia.');
+        $this->redirectBack();
     }
 
     private function renderPage(array $data): void

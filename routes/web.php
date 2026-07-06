@@ -36,6 +36,8 @@ $router->post('/stok-historis/update/{id}', [StokHistorisController::class, 'upd
 $router->post('/stok-historis/delete/{id}', [StokHistorisController::class, 'delete'], [AuthMiddleware::class, CSRFCheckMiddleware::class]);
 $router->get('/preprocessing', [PreprocessingController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/preprocessing/process', [PreprocessingController::class, 'process'], [AuthMiddleware::class, CSRFCheckMiddleware::class]);
+$router->get('/preprocessing/export/ringkasan/{format}', [PreprocessingController::class, 'exportSummary'], [AuthMiddleware::class]);
+$router->get('/preprocessing/export/data-lengkap/{format}', [PreprocessingController::class, 'exportDetail'], [AuthMiddleware::class]);
 $router->get('/lstm', [LstmController::class, 'index'], [AuthMiddleware::class]);
 $router->post('/lstm/train', [LstmController::class, 'train'], [AuthMiddleware::class, CSRFCheckMiddleware::class]);
 $router->post('/lstm/reset-all', [LstmController::class, 'resetAll'], [AuthMiddleware::class, CSRFCheckMiddleware::class]);
