@@ -261,6 +261,26 @@ final class LstmController extends Controller
         $this->exportRows($rows, $format, 'batch-lengkap-' . ($batch['batch_code'] ?? $batchId), 'Batch Lengkap LSTM');
     }
 
+    public function exportBatchAll(string $id): void
+    {
+        $batchId = (int) $id;
+        $batch = LstmBatchRun::find($batchId);
+
+        if ($batch === null) {
+            Session::flash('flash_popup', [
+                'type' => 'error',
+                'title' => 'Batch Tidak Ditemukan',
+                'message' => 'Batch LSTM yang diminta tidak tersedia.',
+            ]);
+            $this->redirectBack();
+        }
+
+        $files = LstmExportService::batchAllCsvFiles($batchId);
+        $safeFilename = preg_replace('/[^A-Za-z0-9\-_]+/', '-', strtolower('semua-' . ($batch['batch_code'] ?? $batchId))) ?: 'export-semua';
+
+        ExportResponse::downloadCsvZip($safeFilename . '.zip', $files);
+    }
+
     public function exportCommodityRecap(string $id, string $format): void
     {
         $batchId = (int) $id;

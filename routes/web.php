@@ -44,6 +44,7 @@ $router->get('/lstm/run/{id}', [LstmController::class, 'run'], [AuthMiddleware::
 $router->get('/evaluasi', [LstmController::class, 'evaluationIndex'], [AuthMiddleware::class]);
 $router->get('/evaluasi/batch/{id}', [LstmController::class, 'batch'], [AuthMiddleware::class]);
 $router->get('/evaluasi/run/{id}', [LstmController::class, 'run'], [AuthMiddleware::class]);
+$router->get('/evaluasi/batch/{id}/export/semua/csv', [LstmController::class, 'exportBatchAll'], [AuthMiddleware::class]);
 $router->get('/evaluasi/batch/{id}/export/batch-summary/{format}', [LstmController::class, 'exportBatchSummary'], [AuthMiddleware::class]);
 $router->get('/evaluasi/batch/{id}/export/batch-lengkap/{format}', [LstmController::class, 'exportBatchComplete'], [AuthMiddleware::class]);
 $router->get('/evaluasi/batch/{id}/export/rekap-komoditas/{format}', [LstmController::class, 'exportCommodityRecap'], [AuthMiddleware::class]);

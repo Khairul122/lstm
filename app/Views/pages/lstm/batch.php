@@ -81,6 +81,13 @@ $pageNumbers = array_values(array_unique($pageNumbers));
                 <div class="section-copy" style="margin-bottom:16px;"><h2>Export Evaluasi Batch</h2><p>Unduh hasil evaluasi batch ini dalam format PDF, Excel, atau CSV sesuai kebutuhan laporan dan analisis lanjutan.</p></div>
                 <div class="export-grid">
                     <div class="export-box">
+                        <h3>Export Semua (CSV)</h3>
+                        <p>Unduh seluruh data batch ini sekaligus: rekap batch, batch lengkap, rekap komoditas, serta prediksi, residual, dan forecast tiap komoditas dalam satu file ZIP berisi CSV.</p>
+                        <div class="export-actions">
+                            <a class="action-link" href="<?= e(base_url('/evaluasi/batch/' . $batch['id'] . '/export/semua/csv')) ?>">Download ZIP</a>
+                        </div>
+                    </div>
+                    <div class="export-box">
                         <h3>Rekap Batch</h3>
                         <p>Metadata batch, konfigurasi model, waktu proses, dan status keseluruhan.</p>
                         <div class="export-actions">

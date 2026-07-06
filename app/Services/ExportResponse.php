@@ -12,6 +12,14 @@ final class ExportResponse
         header('Content-Disposition: attachment; filename="' . $filename . '"');
 
         $output = fopen('php://output', 'wb');
+        fwrite($output, self::csvContent($rows));
+        fclose($output);
+        exit;
+    }
+
+    public static function csvContent(array $rows): string
+    {
+        $output = fopen('php://memory', 'wb');
         fwrite($output, "\xEF\xBB\xBF");
 
         if ($rows !== []) {
@@ -21,7 +29,39 @@ final class ExportResponse
             }
         }
 
+        rewind($output);
+        $content = stream_get_contents($output);
         fclose($output);
+
+        return $content;
+    }
+
+    /**
+     * @param array<int, array{filename: string, rows: array}> $files
+     */
+    public static function downloadCsvZip(string $zipFilename, array $files): void
+    {
+        $tempPath = tempnam(sys_get_temp_dir(), 'lstm_export_');
+        if ($tempPath === false) {
+            http_response_code(500);
+            exit('Gagal membuat file sementara untuk export.');
+        }
+
+        $zip = new \ZipArchive();
+        $zip->open($tempPath, \ZipArchive::OVERWRITE);
+
+        foreach ($files as $file) {
+            $zip->addFromString($file['filename'], self::csvContent($file['rows']));
+        }
+
+        $zip->close();
+
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $zipFilename . '"');
+        header('Content-Length: ' . (string) filesize($tempPath));
+
+        readfile($tempPath);
+        unlink($tempPath);
         exit;
     }
 

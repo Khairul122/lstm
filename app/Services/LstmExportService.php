@@ -92,4 +92,29 @@ final class LstmExportService
     {
         return LstmBatchRun::forecastRows($runId);
     }
+
+    /**
+     * @return array<int, array{filename: string, rows: array}>
+     */
+    public static function batchAllCsvFiles(int $batchId): array
+    {
+        $files = [
+            ['filename' => 'rekap-batch.csv', 'rows' => self::batchSummary($batchId)],
+            ['filename' => 'batch-lengkap.csv', 'rows' => self::batchComplete($batchId)],
+            ['filename' => 'rekap-komoditas.csv', 'rows' => self::commodityRecap($batchId)],
+        ];
+
+        $runs = LstmBatchRun::commodityRuns($batchId, '', 1, 1000)['items'];
+
+        foreach ($runs as $run) {
+            $runId = (int) $run['id'];
+            $slug = preg_replace('/[^A-Za-z0-9\-_]+/', '-', strtolower((string) $run['komoditas'])) ?: (string) $runId;
+
+            $files[] = ['filename' => "prediksi-{$slug}.csv", 'rows' => self::predictionRows($runId)];
+            $files[] = ['filename' => "residual-{$slug}.csv", 'rows' => self::residualRows($runId)];
+            $files[] = ['filename' => "forecast-{$slug}.csv", 'rows' => self::forecastRows($runId)];
+        }
+
+        return $files;
+    }
 }
