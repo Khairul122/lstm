@@ -1,4 +1,5 @@
 .firecrawl/
+.claude/
 vendor/
 storage/models/
 *.log
