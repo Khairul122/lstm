@@ -12,6 +12,12 @@ Fitur utama:
 - export laporan evaluasi
 - landing page publik dengan forecast, filter, pagination, maskot interaktif, dan text-to-speech
 
+## Dokumentasi Tambahan
+
+- [`studi.md`](studi.md) — landasan teori, metodologi penelitian, dan panduan membaca/membahas hasil evaluasi (untuk BAB II, III, IV skripsi).
+- [`transfer_knowledge.md`](transfer_knowledge.md) — panduan sidang: penjelasan sistem versi sederhana, alur demo, glosarium, dan bank pertanyaan-jawaban dosen penguji.
+- [`LICENSE`](LICENSE) — ketentuan lisensi proyek.
+
 ## Teknologi
 
 - PHP 8.1+ 
