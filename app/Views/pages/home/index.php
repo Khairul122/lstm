@@ -253,46 +253,92 @@ foreach (array_slice($featuredCards, 0, 3) as $card) {
 }
 $topCommoditiesLabel = $topCommodities !== [] ? implode(', ', $topCommodities) : 'belum tersedia';
 
+$batchStatusLabel = (string) ($latestBatch['status'] ?? 'Selesai');
+
 $mascotQuickQuestions = [
     [
+        'category' => 'akurasimodel',
         'question' => 'Model apa yang paling akurat?',
-        'keywords' => ['model', 'akurat', 'terbaik', 'best'],
-        'answer' => 'Model terbaik saat ini adalah ' . $bestRunName . ' dengan RMSE ' . $bestRunRmse . ', MAE ' . $bestRunMae . ', dan MAPE ' . $bestRunMape . ' persen.',
+        'keywords' => ['model', 'akurat', 'terbaik', 'best', 'performa', 'juara'],
+        'answer' => '🏆 <strong>Model Terbaik Saat Ini</strong>:<br>• Komoditas: <strong>' . e($bestRunName) . '</strong><br>• RMSE: <strong>' . $bestRunRmse . '</strong><br>• MAE: <strong>' . $bestRunMae . '</strong><br>• MAPE: <strong>' . $bestRunMape . '%</strong>',
     ],
     [
+        'category' => 'akurasimodel',
         'question' => 'Berapa akurasi rata-rata sistem?',
-        'keywords' => ['akurasi', 'rata-rata', 'mape', 'presisi'],
-        'answer' => 'Akurasi rata-rata model saat ini sekitar ' . $accuracyFormatted . ' persen. Sistem memiliki ' . $safeCount . ' model berstatus Safe, ' . $watchCount . ' Watchlist, dan ' . $warningCount . ' Warning.',
+        'keywords' => ['akurasi', 'rata-rata', 'mape', 'presisi', 'performa sistem'],
+        'answer' => '📊 <strong>Ringkasan Akurasi Sistem</strong>:<br>• Rata-rata Akurasi: <strong>' . $accuracyFormatted . '%</strong><br>• Status Safe (MAPE ≤ 10%): <strong>' . $safeCount . ' komoditas</strong><br>• Status Watchlist (10-20%): <strong>' . $watchCount . ' komoditas</strong><br>• Status Warning (> 20%): <strong>' . $warningCount . ' komoditas</strong>',
     ],
     [
+        'category' => 'akurasimodel',
+        'question' => 'Apa itu RMSE, MAE, dan MAPE?',
+        'keywords' => ['rmse', 'mae', 'mape', 'metrik', 'pengukuran', 'rumus', 'beda'],
+        'answer' => '📐 <strong>Metrik Evaluasi Prediksi</strong>:<br>• <strong>RMSE</strong> (Root Mean Squared Error): Mengukur akar rata-rata kuadrat error (memberi penalti lebih besar pada deviasi ekstrem).<br>• <strong>MAE</strong> (Mean Absolute Error): Rata-rata selisih mutlak antara stok aktual & prediksi.<br>• <strong>MAPE</strong> (Mean Absolute Percentage Error): Persentase rata-rata error relatif terhadap stok aktual.',
+    ],
+    [
+        'category' => 'komoditasstok',
         'question' => 'Berapa komoditas yang dipantau?',
-        'keywords' => ['komoditas', 'berapa banyak', 'jumlah'],
-        'answer' => 'Sistem memantau ' . $komoditasTotal . ' komoditas pangan strategis dengan total ' . (int) $stokSummary['total_records'] . ' data stok historis tersimpan di database.',
+        'keywords' => ['komoditas', 'berapa banyak', 'jumlah', 'pangan', 'daftar'],
+        'answer' => '🌾 Sistem memantau <strong>' . $komoditasTotal . ' komoditas pangan strategis</strong> di Kota Lhokseumawe dengan total <strong>' . number_format((int) $stokSummary['total_records']) . ' data stok historis</strong> tersimpan di database.',
     ],
     [
+        'category' => 'komoditasstok',
+        'question' => 'Komoditas mana dengan prediksi tertinggi?',
+        'keywords' => ['tertinggi', 'prediksi tinggi', 'top', 'atas', 'banyak'],
+        'answer' => '📈 <strong>Top 3 Prediksi Volume Stok Terbesar</strong>:<br>' . e($topCommoditiesLabel) . '.',
+    ],
+    [
+        'category' => 'komoditasstok',
+        'question' => 'Bagaimana cara mencari stok komoditas spesifik?',
+        'keywords' => ['cari komoditas', 'stok beras', 'stok cabai', 'stok minyak', 'detail komoditas'],
+        'answer' => '🔍 Anda dapat mengetik langsung nama komoditas seperti <strong>"Beras"</strong>, <strong>"Cabai Merah"</strong>, <strong>"Minyak Goreng"</strong>, atau <strong>"Bawang Merah"</strong> di kolom chat ini! Saya akan menampilkan data prediksi & akurasi terbarunya.',
+    ],
+    [
+        'category' => 'carakerja',
         'question' => 'Apa itu algoritma LSTM?',
-        'keywords' => ['lstm', 'algoritma', 'cara kerja', 'metodologi'],
-        'answer' => 'LSTM atau Long Short-Term Memory adalah varian Recurrent Neural Network yang dirancang untuk menangkap dependensi jangka panjang pada data deret waktu. Sangat cocok untuk memodelkan fluktuasi stok pangan musiman.',
+        'keywords' => ['lstm', 'algoritma', 'cara kerja', 'metodologi', 'rnn', 'neural network'],
+        'answer' => '🧠 <strong>Long Short-Term Memory (LSTM)</strong> adalah arsitektur Recurrent Neural Network (RNN) khusus yang memiliki mekanisme <em>forget gate</em>, <em>input gate</em>, dan <em>output gate</em>. LSTM sangat handal menangkap pola musiman dan tren jangka panjang data stok pangan tanpa masalah <em>vanishing gradient</em>.',
     ],
     [
-        'question' => 'Kapan data terakhir diperbarui?',
-        'keywords' => ['tanggal', 'data terbaru', 'update', 'kapan'],
-        'answer' => 'Data stok historis terakhir tercatat pada tanggal ' . (string) $stokSummary['latest_date'] . '. Batch prediksi terbaru adalah ' . (string) ($latestBatch['batch_code'] ?? '-') . ' dengan status ' . $batchStatusLabel . '.',
+        'category' => 'carakerja',
+        'question' => 'Bagaimana tahapan preprocessing data?',
+        'keywords' => ['preprocessing', 'tahapan', 'normalisasi', 'minmax', 'split', 'windowing'],
+        'answer' => '⚙️ <strong>Tahapan Preprocessing Data</strong>:<br>1. <strong>Interpolasi Missing Values</strong>: Mengisi celah tanggal kosong.<br>2. <strong>Windowing / Sequence Length</strong>: Membentuk pasangan input-target deret waktu.<br>3. <strong>MinMax Scaling</strong>: Mengubah skala data stok ke rentang [0, 1].<br>4. <strong>Data Split</strong>: Membagi data ke rasio Latih (Train) & Uji (Test).',
     ],
     [
-        'question' => 'Komoditas mana yang prediksinya tertinggi?',
-        'keywords' => ['tertinggi', 'prediksi tinggi', 'top', 'atas'],
-        'answer' => 'Tiga komoditas dengan nilai prediksi tertinggi saat ini: ' . $topCommoditiesLabel . '.',
+        'category' => 'carakerja',
+        'question' => 'Bagaimana cara model memprediksi 365 hari ke depan?',
+        'keywords' => ['autoregressif', '365 hari', 'proyeksi', 'jangka panjang', 'forecast'],
+        'answer' => '🔮 <strong>Autoregressive Forecasting</strong>:<br>Model LSTM menggunakan hasil prediksi hari ke-(t) sebagai input masukan untuk memprediksi hari ke-(t+1) secara berantai hingga 365 hari ke depan, menghasilkan proyeksi tren stok bulanan & tahunan.',
     ],
     [
-        'question' => 'Bagaimana cara masuk ke dashboard?',
-        'keywords' => ['login', 'masuk', 'dashboard', 'admin'],
-        'answer' => 'Klik tombol Masuk Sistem di pojok kanan atas untuk mengakses panel admin. Anda memerlukan kredensial resmi Dinas Pangan Kota Lhokseumawe.',
-    ],
-    [
+        'category' => 'statuswarning',
         'question' => 'Apa perbedaan Safe, Watchlist, dan Warning?',
-        'keywords' => ['safe', 'watchlist', 'warning', 'status', 'perbedaan'],
-        'answer' => 'Safe berarti MAPE di bawah 10 persen, Watchlist antara 10 sampai 20 persen, dan Warning di atas 20 persen. Semakin rendah MAPE, semakin akurat modelnya.',
+        'keywords' => ['safe', 'watchlist', 'warning', 'status', 'perbedaan', 'kriteria', 'ambang'],
+        'answer' => '🚦 <strong>Kriteria Status Akurasi Model</strong>:<br>• <strong style="color:#059669">Safe (MAPE ≤ 10%)</strong>: Model sangat presisi, deviasi sangat kecil.<br>• <strong style="color:#d97706">Watchlist (10% &lt; MAPE ≤ 20%)</strong>: Model cukup akurat, perlu pemantauan berkala.<br>• <strong style="color:#e11d48">Warning (MAPE &gt; 20%)</strong>: Model memiliki error tinggi, disarankan retrain batch.',
+    ],
+    [
+        'category' => 'statuswarning',
+        'question' => 'Apa yang harus dilakukan jika status Warning?',
+        'keywords' => ['solusi warning', 'penanganan warning', 'gagal', 'retrain', 'tindakan'],
+        'answer' => '🛠️ <strong>Langkah Penanganan Warning</strong>:<br>1. Periksa ketersediaan data stok historis terbaru.<br>2. Masuk ke Dashboard Admin -&gt; Preprocessing & Training.<br>3. Lakukan retraining batch dengan menambah epoch atau menyesuaikan sequence length.',
+    ],
+    [
+        'category' => 'eksporfitur',
+        'question' => 'Fitur ekspor apa saja yang tersedia?',
+        'keywords' => ['ekspor', 'export', 'pdf', 'excel', 'csv', 'unduh', 'download', 'laporan'],
+        'answer' => '📥 <strong>Fitur Ekspor & Pelaporan</strong>:<br>• <strong>PDF Report</strong>: Laporan ringkasan & detail evaluasi berformat resmi.<br>• <strong>Excel (.xls) & CSV</strong>: Unduh data prediksi, residual & forecast untuk analisis lanjutan.<br>• <strong>Dokumen Bab 4</strong>: Otomatisasi pembentukan tabel & grafik analisis untuk laporan karya ilmiah/skripsi.',
+    ],
+    [
+        'category' => 'eksporfitur',
+        'question' => 'Kapan data terakhir diperbarui?',
+        'keywords' => ['tanggal', 'data terbaru', 'update', 'kapan', 'batch terbaru'],
+        'answer' => '📅 <strong>Status Data Terbaru</strong>:<br>• Data Stok Historis Terakhir: <strong>' . e((string) $stokSummary['latest_date']) . '</strong><br>• Kode Batch Prediksi: <strong>' . e((string) ($latestBatch['batch_code'] ?? '-')) . '</strong><br>• Status Batch: <strong>' . e($batchStatusLabel) . '</strong>',
+    ],
+    [
+        'category' => 'eksporfitur',
+        'question' => 'Bagaimana cara masuk ke Dashboard Admin?',
+        'keywords' => ['login', 'masuk', 'dashboard', 'admin', 'akses'],
+        'answer' => '🔐 Klik tombol <strong>"Masuk Sistem"</strong> di pojok kanan atas navigasi. Panel admin diperuntukkan bagi petugas Dinas Pangan Kota Lhokseumawe untuk mengelola data stok, komoditas, dan menjalankan training LSTM.',
     ],
 ];
 
@@ -1231,23 +1277,35 @@ $mascotSectionTips = [
                 </button>
             </div>
         </div>
-        <div class="mascot-body custom-scrollbar" id="mascotBody">
-            <div class="mascot-tip" id="mascotTipBox">Tip: saya akan mengubah ekspresi ketika Anda berpindah bagian halaman.</div>
+        <div class="mascot-body custom-scrollbar flex flex-col flex-1 p-3.5 gap-3 overflow-y-auto" id="mascotBody">
+            <div class="mascot-tip shrink-0" id="mascotTipBox">Tip: saya akan mengubah ekspresi ketika Anda berpindah bagian halaman.</div>
             
             <!-- Chat Log container representing real messages -->
-            <div id="mascotChatLog" class="flex flex-col gap-3 overflow-y-auto pr-1 flex-1 custom-scrollbar min-h-[160px] max-h-[220px]">
+            <div id="mascotChatLog" class="flex flex-col gap-3 overflow-y-auto pr-1 flex-1 custom-scrollbar min-h-[140px]">
                 <div class="mascot-message-bot">
                     Halo! Saya <strong>Si Padi Cerdas</strong>. Saya siap menjawab pertanyaan seputar sistem prediksi stok pangan Lhokseumawe ini. Silakan pilih pertanyaan di bawah atau ketik langsung pertanyaan Anda!
                 </div>
             </div>
             
-            <p class="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 mt-2 mb-1.5">Pertanyaan Cepat</p>
-            <div class="mascot-chip-row custom-scrollbar overflow-x-auto pb-1 flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto">
-                <?php foreach ($mascotQuickQuestions as $index => $qa): ?>
-                    <button type="button" class="mascot-chip" data-mascot-answer="<?= e($qa['answer']) ?>" data-mascot-question="<?= e($qa['question']) ?>">
-                        <?= e($qa['question']) ?>
-                    </button>
-                <?php endforeach; ?>
+            <div class="mascot-suggestions-box bg-slate-100/70 rounded-xl p-2.5 border border-slate-200/70 shrink-0 mt-auto">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-slate-500 shrink-0">Pertanyaan Cepat</span>
+                    <div class="flex gap-1 text-[9px] overflow-x-auto pb-0.5 custom-scrollbar shrink-0 max-w-[210px]" id="mascotCategoryPills">
+                        <button type="button" class="mascot-cat-pill active shrink-0 px-2 py-0.5 rounded-full bg-primary text-white font-bold transition-all text-[9px]" data-cat="all">Semua</button>
+                        <button type="button" class="mascot-cat-pill shrink-0 px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-semibold hover:bg-slate-100 transition-all text-[9px]" data-cat="akurasimodel">📊 Akurasi</button>
+                        <button type="button" class="mascot-cat-pill shrink-0 px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-semibold hover:bg-slate-100 transition-all text-[9px]" data-cat="komoditasstok">🌾 Komoditas</button>
+                        <button type="button" class="mascot-cat-pill shrink-0 px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-semibold hover:bg-slate-100 transition-all text-[9px]" data-cat="carakerja">🧠 LSTM</button>
+                        <button type="button" class="mascot-cat-pill shrink-0 px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-semibold hover:bg-slate-100 transition-all text-[9px]" data-cat="statuswarning">🚨 Status</button>
+                        <button type="button" class="mascot-cat-pill shrink-0 px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-semibold hover:bg-slate-100 transition-all text-[9px]" data-cat="eksporfitur">📥 Ekspor</button>
+                    </div>
+                </div>
+                <div class="mascot-chip-row custom-scrollbar flex flex-wrap gap-1.5 max-h-[110px] overflow-y-auto pr-0.5">
+                    <?php foreach ($mascotQuickQuestions as $index => $qa): ?>
+                        <button type="button" class="mascot-chip" data-cat="<?= e($qa['category'] ?? 'all') ?>" data-mascot-answer="<?= e($qa['answer']) ?>" data-mascot-question="<?= e($qa['question']) ?>">
+                            <?= e($qa['question']) ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
         <div class="mascot-input-wrap">
@@ -1911,6 +1969,7 @@ $mascotSectionTips = [
         const mascotFaces = <?= json_encode($mascotFaces, JSON_UNESCAPED_UNICODE) ?>;
         const mascotKnowledge = <?= json_encode($mascotQuickQuestions, JSON_UNESCAPED_UNICODE) ?>;
         const mascotSectionTips = <?= json_encode($mascotSectionTips, JSON_UNESCAPED_UNICODE) ?>;
+        const mascotForecastCards = <?= json_encode($forecastCards, JSON_UNESCAPED_UNICODE) ?>;
 
         const mascotShell = document.getElementById('mascotShell');
         const mascotToggle = document.getElementById('mascotToggle');
@@ -1927,6 +1986,7 @@ $mascotSectionTips = [
         const mascotChips = document.querySelectorAll('[data-mascot-answer]');
         const mascotInput = document.getElementById('mascotInput');
         const mascotSend = document.getElementById('mascotSend');
+        const categoryPills = document.querySelectorAll('.mascot-cat-pill');
 
         let mascotBubbleTimer = null;
         let speechVoice = null;
@@ -1948,7 +2008,10 @@ $mascotSectionTips = [
 
         const showMascotBubble = (message) => {
             if (!mascotBubble) return;
-            mascotBubble.textContent = message;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = message;
+            const cleanText = tempDiv.textContent || tempDiv.innerText || message;
+            mascotBubble.textContent = cleanText.length > 70 ? cleanText.slice(0, 68) + '…' : cleanText;
             mascotBubble.classList.remove('is-hidden');
             if (mascotBubbleTimer) window.clearTimeout(mascotBubbleTimer);
             mascotBubbleTimer = window.setTimeout(() => {
@@ -2010,56 +2073,134 @@ $mascotSectionTips = [
             if (mascotTypingTimeout) window.clearTimeout(mascotTypingTimeout);
 
             const msgNode = document.createElement('div');
-            msgNode.className = 'mascot-message-bot reveal visible';
+            msgNode.className = 'mascot-message-bot reveal visible leading-relaxed text-xs space-y-1';
             msgNode.innerHTML = '<span class="mascot-typing"><span></span><span></span><span></span></span>';
             mascotChatLog.appendChild(msgNode);
             mascotChatLog.scrollTop = mascotChatLog.scrollHeight;
 
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = text;
+            const plainText = tempDiv.textContent || tempDiv.innerText || text;
+
             let i = 0;
-            const delay = Math.max(8, Math.min(24, 1200 / Math.max(text.length, 1)));
+            const delay = Math.max(5, Math.min(18, 900 / Math.max(plainText.length, 1)));
 
             const step = () => {
                 if (i === 0) msgNode.textContent = '';
-                if (i < text.length) {
-                    msgNode.textContent = text.slice(0, i + 1);
+                if (i < plainText.length) {
+                    msgNode.textContent = plainText.slice(0, i + 1);
                     i++;
                     mascotTypingTimeout = window.setTimeout(step, delay);
                 } else {
-                    msgNode.textContent = text;
-                    if (shouldSpeak) speakText(text);
+                    msgNode.innerHTML = text;
+                    if (shouldSpeak) speakText(plainText);
                 }
                 mascotChatLog.scrollTop = mascotChatLog.scrollHeight;
             };
-            mascotTypingTimeout = window.setTimeout(step, 650);
+            mascotTypingTimeout = window.setTimeout(step, 400);
         };
 
         const findAnswer = (query) => {
             const q = query.toLowerCase().trim();
             if (!q) return null;
+
+            // 1. Dynamic Commodity Search in Live Cards
+            if (Array.isArray(mascotForecastCards) && mascotForecastCards.length > 0) {
+                for (const card of mascotForecastCards) {
+                    const komName = (card.komoditas || card.commodity || '').toLowerCase();
+                    if (komName && q.includes(komName)) {
+                        const val = card.forecast_denormalized ? Number(card.forecast_denormalized).toLocaleString('id-ID', { maximumFractionDigits: 2 }) : (card.value || '0');
+                        const unit = card.satuan || card.unit || 'Ton';
+                        const mape = card.mape ? Number(card.mape).toFixed(2) : '0';
+                        const rmse = card.rmse ? Number(card.rmse).toFixed(2) : '0';
+                        const mae = card.mae ? Number(card.mae).toFixed(2) : '0';
+                        
+                        let statusColor = '#059669';
+                        let statusText = 'Safe (Sangat Presisi)';
+                        let reco = 'Stok terproyeksi stabil. Pertahankan ritme pasokan pasar.';
+                        if (card.mape > 20) {
+                            statusColor = '#e11d48';
+                            statusText = 'Warning (Error Tinggi)';
+                            reco = 'Perlu evaluasi ulang data historis dan jalankan retraining batch LSTM.';
+                        } else if (card.mape > 10) {
+                            statusColor = '#d97706';
+                            statusText = 'Watchlist (Perlu Pemantauan)';
+                            reco = 'Lakukan pemantauan berkala pada distribusi pasar Kota Lhokseumawe.';
+                        }
+
+                        return `🌾 <strong>Data Prediksi Komoditas: ${card.komoditas || card.commodity}</strong><br>` +
+                               `• <strong>Proyeksi Stok</strong>: <strong>${val} ${unit}</strong><br>` +
+                               `• <strong>Akurasi Model (MAPE)</strong>: <strong>${mape}%</strong><br>` +
+                               `• <strong>Akurasi (RMSE / MAE)</strong>: ${rmse} / ${mae}<br>` +
+                               `• <strong>Status Evaluasi</strong>: <strong style="color:${statusColor}">${statusText}</strong><br>` +
+                               `💡 <em>${reco}</em>`;
+                    }
+                }
+            }
+
+            // 2. Salam & Menyapa
+            if (q.includes('halo') || q.includes('hai') || q.includes('hi ') || q === 'hi' || q.includes('selamat')) {
+                return '👋 <strong>Halo! Saya Si Padi Cerdas.</strong><br>Asisten virtual resmi sistem forecasting stok pangan Kota Lhokseumawe. Silakan tanyakan seputar akurasi model, prediksi komoditas, cara kerja LSTM, atau status stok!';
+            }
+            if (q.includes('terima kasih') || q.includes('makasih') || q.includes('thanks') || q.includes('tengkiu')) {
+                return '😊 <strong>Sama-sama!</strong> Senang bisa membantu Anda memahami sistem forecasting stok pangan Kota Lhokseumawe. Ada hal lain yang ingin Anda ketahui?';
+            }
+
+            // 3. Keyword Scoring with Knowledge Base
             let bestMatch = null;
             let bestScore = 0;
 
             mascotKnowledge.forEach((entry) => {
                 let score = 0;
                 (entry.keywords || []).forEach((kw) => {
-                    if (q.includes(kw.toLowerCase())) score += 2;
+                    const kwLower = kw.toLowerCase();
+                    if (q.includes(kwLower)) {
+                        score += (kwLower.length > 4) ? 3 : 2;
+                    }
                 });
-                if (entry.question && q.includes(entry.question.toLowerCase().slice(0, 6))) score += 1;
+                if (entry.question && q.includes(entry.question.toLowerCase().slice(0, 8))) {
+                    score += 4;
+                }
                 if (score > bestScore) {
                     bestScore = score;
                     bestMatch = entry;
                 }
             });
 
-            if (bestMatch) return bestMatch.answer;
-            if (q.includes('halo') || q.includes('hai') || q.includes('hi')) {
-                return 'Halo! Saya Si Padi Cerdas. Silakan tanyakan apa saja tentang sistem forecasting stok pangan Lhokseumawe ini.';
+            if (bestMatch && bestScore >= 2) {
+                return bestMatch.answer;
             }
-            if (q.includes('terima kasih') || q.includes('makasih') || q.includes('thanks')) {
-                return 'Sama-sama. Senang bisa membantu Anda memahami sistem ini!';
-            }
-            return 'Maaf, saya belum memiliki informasi lengkap tentang hal tersebut. Cobalah menanyakan tentang: akurasi model, komoditas, cara kerja LSTM, atau dashboard.';
+
+            // 4. Fallback dengan Rekomendasi Topik
+            return `🤔 <strong>Pertanyaan Menarik!</strong><br>` +
+                   `Saya belum memiliki jawaban spesifik untuk kata kunci tersebut. Cobalah menanyakan salah satu topik ini:<br>` +
+                   `• <strong>"Model apa yang paling akurat?"</strong><br>` +
+                   `• <strong>"Bagaimana prediksi Beras / Cabai?"</strong><br>` +
+                   `• <strong>"Apa itu RMSE dan MAPE?"</strong><br>` +
+                   `• <strong>"Apa perbedaan Safe dan Warning?"</strong>`;
         };
+
+        // Category Pill Filter Event Listeners
+        categoryPills.forEach((pill) => {
+            pill.addEventListener('click', () => {
+                const cat = pill.getAttribute('data-cat');
+                categoryPills.forEach((p) => {
+                    p.classList.remove('active', 'bg-primary', 'text-white', 'font-bold');
+                    p.classList.add('bg-white', 'text-slate-600', 'font-semibold', 'border', 'border-slate-200');
+                });
+                pill.classList.add('active', 'bg-primary', 'text-white', 'font-bold');
+                pill.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+
+                mascotChips.forEach((chip) => {
+                    const chipCat = chip.getAttribute('data-cat');
+                    if (cat === 'all' || chipCat === cat) {
+                        chip.style.display = 'inline-flex';
+                    } else {
+                        chip.style.display = 'none';
+                    }
+                });
+            });
+        });
 
         const askMascot = (question, forcedAnswer = null) => {
             appendUserBubble(question);

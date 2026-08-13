@@ -515,22 +515,26 @@ if (!function_exists('landing_page_theme_assets')) {
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-        margin-top: 6px;
+        margin-top: 4px;
     }
     .mascot-chip {
-        border: 1px solid rgba(15, 59, 117, 0.08);
-        border-radius: 99px;
+        border: 1px solid rgba(15, 59, 117, 0.12);
+        border-radius: 999px;
         background: #ffffff;
         color: #0f3b75;
-        padding: 8px 12px;
-        font-size: .75rem;
+        padding: 6px 11px;
+        font-size: 0.72rem;
         font-weight: 600;
+        line-height: 1.3;
         cursor: pointer;
         transition: all .2s ease;
-        box-shadow: 0 2px 4px rgba(15,23,42,0.02);
+        box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+        text-align: left;
+        white-space: normal;
+        word-break: break-word;
     }
     .mascot-chip:hover {
-        transform: translateY(-1.5px);
+        transform: translateY(-1px);
         background: #0f3b75;
         color: #fff;
         border-color: #0f3b75;
