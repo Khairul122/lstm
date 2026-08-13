@@ -217,16 +217,21 @@ final class DataPreprocessingLstm
 
         $whereSql = '';
         if ($search !== '') {
-            $whereSql = 'WHERE komoditas LIKE :search
-                OR tanggal_asli LIKE :search
-                OR format_waktu LIKE :search
-                OR status_anomali LIKE :search
-                OR set_data LIKE :search';
+            $whereSql = 'WHERE komoditas LIKE :s1
+                OR tanggal_asli LIKE :s2
+                OR format_waktu LIKE :s3
+                OR status_anomali LIKE :s4
+                OR set_data LIKE :s5';
         }
 
         $countStmt = $pdo->prepare('SELECT COUNT(*) FROM data_preprocessing_lstm ' . $whereSql);
         if ($search !== '') {
-            $countStmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $countStmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s3', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s4', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s5', $term, PDO::PARAM_STR);
         }
         $countStmt->execute();
 
@@ -258,7 +263,12 @@ final class DataPreprocessingLstm
         );
 
         if ($search !== '') {
-            $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $stmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s3', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s4', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s5', $term, PDO::PARAM_STR);
         }
 
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);

@@ -22,12 +22,16 @@ final class StokHistoris
 
         if ($search !== '') {
             $whereSql = 'WHERE (
-                k.kode_komoditas LIKE :search
-                OR k.nama_komoditas LIKE :search
-                OR dsh.waktu_catat LIKE :search
-                OR dsh.lokasi_gudang LIKE :search
+                k.kode_komoditas LIKE :s1
+                OR k.nama_komoditas LIKE :s2
+                OR dsh.waktu_catat LIKE :s3
+                OR dsh.lokasi_gudang LIKE :s4
             )';
-            $bindings[':search'] = '%' . $search . '%';
+            $term = '%' . $search . '%';
+            $bindings[':s1'] = $term;
+            $bindings[':s2'] = $term;
+            $bindings[':s3'] = $term;
+            $bindings[':s4'] = $term;
         }
 
         $countStmt = $pdo->prepare(

@@ -19,12 +19,15 @@ final class Komoditas
 
         $whereSql = '';
         if ($search !== '') {
-            $whereSql = 'WHERE kode_komoditas LIKE :search OR nama_komoditas LIKE :search OR satuan LIKE :search';
+            $whereSql = 'WHERE kode_komoditas LIKE :s1 OR nama_komoditas LIKE :s2 OR satuan LIKE :s3';
         }
 
         $countStmt = $pdo->prepare('SELECT COUNT(*) FROM komoditas ' . $whereSql);
         if ($search !== '') {
-            $countStmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $countStmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s3', $term, PDO::PARAM_STR);
         }
         $countStmt->execute();
 
@@ -45,7 +48,10 @@ final class Komoditas
         );
 
         if ($search !== '') {
-            $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $stmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s3', $term, PDO::PARAM_STR);
         }
 
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);

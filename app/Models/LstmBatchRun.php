@@ -193,12 +193,15 @@ final class LstmBatchRun
 
         $whereSql = '';
         if ($search !== '') {
-            $whereSql = 'WHERE batch_code LIKE :search OR status LIKE :search OR notes LIKE :search';
+            $whereSql = 'WHERE batch_code LIKE :s1 OR status LIKE :s2 OR notes LIKE :s3';
         }
 
         $countStmt = $pdo->prepare('SELECT COUNT(*) FROM lstm_batch_runs ' . $whereSql);
         if ($search !== '') {
-            $countStmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $countStmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s3', $term, PDO::PARAM_STR);
         }
         $countStmt->execute();
         $totalItems = (int) $countStmt->fetchColumn();
@@ -213,7 +216,10 @@ final class LstmBatchRun
             'SELECT * FROM lstm_batch_runs ' . $whereSql . ' ORDER BY id DESC LIMIT :limit OFFSET :offset'
         );
         if ($search !== '') {
-            $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $stmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s3', $term, PDO::PARAM_STR);
         }
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -280,13 +286,15 @@ final class LstmBatchRun
 
         $whereSql = 'WHERE r.batch_id = :batch_id';
         if ($search !== '') {
-            $whereSql .= ' AND (r.komoditas LIKE :search OR r.status LIKE :search)';
+            $whereSql .= ' AND (r.komoditas LIKE :s1 OR r.status LIKE :s2)';
         }
 
         $countStmt = $pdo->prepare('SELECT COUNT(*) FROM lstm_model_runs r ' . $whereSql);
         $countStmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
         if ($search !== '') {
-            $countStmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $countStmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s2', $term, PDO::PARAM_STR);
         }
         $countStmt->execute();
         $totalItems = (int) $countStmt->fetchColumn();
@@ -307,7 +315,9 @@ final class LstmBatchRun
         );
         $stmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
         if ($search !== '') {
-            $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $stmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s2', $term, PDO::PARAM_STR);
         }
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -391,7 +401,7 @@ final class LstmBatchRun
         return self::paginateChildTable(
             'SELECT * FROM lstm_model_predictions WHERE run_id = :run_id',
             'SELECT COUNT(*) FROM lstm_model_predictions WHERE run_id = :run_id',
-            ' AND (komoditas LIKE :search OR tanggal LIKE :search OR dataset_type LIKE :search)',
+            ' AND (komoditas LIKE :s1 OR tanggal LIKE :s2 OR dataset_type LIKE :s3)',
             ' ORDER BY tanggal ASC LIMIT :limit OFFSET :offset',
             $runId,
             $search,
@@ -405,7 +415,7 @@ final class LstmBatchRun
         return self::paginateChildTable(
             'SELECT * FROM lstm_model_residuals WHERE run_id = :run_id',
             'SELECT COUNT(*) FROM lstm_model_residuals WHERE run_id = :run_id',
-            ' AND (komoditas LIKE :search OR tanggal LIKE :search)',
+            ' AND (komoditas LIKE :s1 OR tanggal LIKE :s2)',
             ' ORDER BY tanggal ASC LIMIT :limit OFFSET :offset',
             $runId,
             $search,
@@ -419,7 +429,7 @@ final class LstmBatchRun
         return self::paginateChildTable(
             'SELECT * FROM lstm_model_forecasts WHERE run_id = :run_id',
             'SELECT COUNT(*) FROM lstm_model_forecasts WHERE run_id = :run_id',
-            ' AND (komoditas LIKE :search OR tanggal_forecast LIKE :search)',
+            ' AND (komoditas LIKE :s1 OR tanggal_forecast LIKE :s2)',
             ' ORDER BY tanggal_forecast ASC LIMIT :limit OFFSET :offset',
             $runId,
             $search,
@@ -553,7 +563,11 @@ final class LstmBatchRun
                 'latestBatch' => null,
                 'bestRun' => null,
                 'forecastCards' => [],
-                'forecastChart' => [],
+                'forecastChart' => [
+                    'daily' => [],
+                    'monthly' => [],
+                    'commoditySummary' => [],
+                ],
             ];
         }
 
@@ -579,24 +593,96 @@ final class LstmBatchRun
         $forecastCardsStmt->execute();
         $forecastCards = $forecastCardsStmt->fetchAll();
 
-        $chartStmt = $pdo->prepare(
+        // 1. Daily forecast points
+        $dailyStmt = $pdo->prepare(
             'SELECT r.komoditas,
                     f.tanggal_forecast,
-                    f.forecast_denormalized
+                    f.forecast_horizon_day,
+                    f.forecast_denormalized,
+                    COALESCE(k.satuan, "") AS satuan
              FROM lstm_model_runs r
              INNER JOIN lstm_model_forecasts f ON f.run_id = r.id
+             LEFT JOIN komoditas k ON k.nama_komoditas COLLATE utf8mb4_general_ci = r.komoditas COLLATE utf8mb4_general_ci
              WHERE r.batch_id = :batch_id
-               AND f.forecast_horizon_day IN (1, 30, 90, 180, 365)
-             ORDER BY r.komoditas ASC, f.forecast_horizon_day ASC'
+             ORDER BY f.tanggal_forecast ASC, r.komoditas ASC'
         );
-        $chartStmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
-        $chartStmt->execute();
+        $dailyStmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
+        $dailyStmt->execute();
+        $dailyData = $dailyStmt->fetchAll();
+
+        // 2. Weekly aggregated forecast
+        $weeklyStmt = $pdo->prepare(
+            'SELECT r.komoditas,
+                    YEARWEEK(f.tanggal_forecast, 1) AS year_week,
+                    DATE_FORMAT(MIN(f.tanggal_forecast), "%d %b") AS week_label,
+                    MIN(f.tanggal_forecast) AS start_date,
+                    MAX(f.tanggal_forecast) AS end_date,
+                    ROUND(AVG(f.forecast_denormalized), 2) AS avg_forecast,
+                    ROUND(MIN(f.forecast_denormalized), 2) AS min_forecast,
+                    ROUND(MAX(f.forecast_denormalized), 2) AS max_forecast,
+                    COALESCE(k.satuan, "") AS satuan
+             FROM lstm_model_runs r
+             INNER JOIN lstm_model_forecasts f ON f.run_id = r.id
+             LEFT JOIN komoditas k ON k.nama_komoditas COLLATE utf8mb4_general_ci = r.komoditas COLLATE utf8mb4_general_ci
+             WHERE r.batch_id = :batch_id
+             GROUP BY r.komoditas, YEARWEEK(f.tanggal_forecast, 1), k.satuan
+             ORDER BY MIN(f.tanggal_forecast) ASC, r.komoditas ASC'
+        );
+        $weeklyStmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
+        $weeklyStmt->execute();
+        $weeklyData = $weeklyStmt->fetchAll();
+
+        // 3. Monthly aggregated forecast
+        $monthlyStmt = $pdo->prepare(
+            'SELECT r.komoditas,
+                    DATE_FORMAT(f.tanggal_forecast, "%Y-%m") AS ym_code,
+                    DATE_FORMAT(f.tanggal_forecast, "%b %Y") AS month_label,
+                    ROUND(AVG(f.forecast_denormalized), 2) AS avg_forecast,
+                    ROUND(MIN(f.forecast_denormalized), 2) AS min_forecast,
+                    ROUND(MAX(f.forecast_denormalized), 2) AS max_forecast,
+                    COALESCE(k.satuan, "") AS satuan
+             FROM lstm_model_runs r
+             INNER JOIN lstm_model_forecasts f ON f.run_id = r.id
+             LEFT JOIN komoditas k ON k.nama_komoditas COLLATE utf8mb4_general_ci = r.komoditas COLLATE utf8mb4_general_ci
+             WHERE r.batch_id = :batch_id
+             GROUP BY r.komoditas, DATE_FORMAT(f.tanggal_forecast, "%Y-%m"), DATE_FORMAT(f.tanggal_forecast, "%b %Y"), k.satuan
+             ORDER BY DATE_FORMAT(f.tanggal_forecast, "%Y-%m") ASC, r.komoditas ASC'
+        );
+        $monthlyStmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
+        $monthlyStmt->execute();
+        $monthlyData = $monthlyStmt->fetchAll();
+
+        // 4. Commodity summary comparison
+        $summaryStmt = $pdo->prepare(
+            'SELECT r.komoditas,
+                    ROUND(AVG(f.forecast_denormalized), 2) AS avg_forecast,
+                    ROUND(MIN(f.forecast_denormalized), 2) AS min_forecast,
+                    ROUND(MAX(f.forecast_denormalized), 2) AS max_forecast,
+                    COALESCE(k.satuan, "") AS satuan,
+                    m.mape,
+                    m.rmse
+             FROM lstm_model_runs r
+             INNER JOIN lstm_model_forecasts f ON f.run_id = r.id
+             LEFT JOIN lstm_model_metrics m ON m.run_id = r.id
+             LEFT JOIN komoditas k ON k.nama_komoditas COLLATE utf8mb4_general_ci = r.komoditas COLLATE utf8mb4_general_ci
+             WHERE r.batch_id = :batch_id
+             GROUP BY r.komoditas, k.satuan, m.mape, m.rmse
+             ORDER BY avg_forecast DESC'
+        );
+        $summaryStmt->bindValue(':batch_id', $batchId, PDO::PARAM_INT);
+        $summaryStmt->execute();
+        $commoditySummary = $summaryStmt->fetchAll();
 
         return [
             'latestBatch' => $latestBatch,
             'bestRun' => $bestRun,
             'forecastCards' => $forecastCards,
-            'forecastChart' => $chartStmt->fetchAll(),
+            'forecastChart' => [
+                'daily' => $dailyData,
+                'weekly' => $weeklyData,
+                'monthly' => $monthlyData,
+                'commoditySummary' => $commoditySummary,
+            ],
         ];
     }
 
@@ -645,7 +731,7 @@ final class LstmBatchRun
 
         $whereSql = ' WHERE 1=1';
         if ($search !== '') {
-            $whereSql .= ' AND (r.komoditas LIKE :search OR f.tanggal_forecast LIKE :search OR latest_snapshot.lokasi_gudang LIKE :search OR b.batch_code LIKE :search)';
+            $whereSql .= ' AND (r.komoditas LIKE :s1 OR f.tanggal_forecast LIKE :s2 OR latest_snapshot.lokasi_gudang LIKE :s3 OR b.batch_code LIKE :s4)';
         }
         if ($commodity !== '') {
             $whereSql .= ' AND r.komoditas = :commodity';
@@ -674,7 +760,11 @@ final class LstmBatchRun
 
         $countStmt = $pdo->prepare('SELECT COUNT(*)' . $baseFrom . $whereSql);
         if ($search !== '') {
-            $countStmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $countStmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s3', $term, PDO::PARAM_STR);
+            $countStmt->bindValue(':s4', $term, PDO::PARAM_STR);
         }
         if ($commodity !== '') {
             $countStmt->bindValue(':commodity', $commodity, PDO::PARAM_STR);
@@ -707,7 +797,11 @@ final class LstmBatchRun
               LIMIT :limit OFFSET :offset'
         );
         if ($search !== '') {
-            $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            $stmt->bindValue(':s1', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s2', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s3', $term, PDO::PARAM_STR);
+            $stmt->bindValue(':s4', $term, PDO::PARAM_STR);
         }
         if ($commodity !== '') {
             $stmt->bindValue(':commodity', $commodity, PDO::PARAM_STR);
@@ -833,7 +927,14 @@ final class LstmBatchRun
         $countStmt = $pdo->prepare($countSql);
         $countStmt->bindValue(':run_id', $runId, PDO::PARAM_INT);
         if ($search !== '') {
-            $countStmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            if (preg_match_all('/:(s\d+)/', $searchClause, $matches)) {
+                foreach (array_unique($matches[0]) as $paramName) {
+                    $countStmt->bindValue($paramName, $term, PDO::PARAM_STR);
+                }
+            } else {
+                $countStmt->bindValue(':search', $term, PDO::PARAM_STR);
+            }
         }
         $countStmt->execute();
 
@@ -848,7 +949,14 @@ final class LstmBatchRun
         $stmt = $pdo->prepare($selectSql . $orderClause);
         $stmt->bindValue(':run_id', $runId, PDO::PARAM_INT);
         if ($search !== '') {
-            $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $term = '%' . $search . '%';
+            if (preg_match_all('/:(s\d+)/', $searchClause, $matches)) {
+                foreach (array_unique($matches[0]) as $paramName) {
+                    $stmt->bindValue($paramName, $term, PDO::PARAM_STR);
+                }
+            } else {
+                $stmt->bindValue(':search', $term, PDO::PARAM_STR);
+            }
         }
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);

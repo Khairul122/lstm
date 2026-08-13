@@ -63,14 +63,7 @@ foreach ($stokSummary['latest_snapshot'] as $snapshot) {
     $snapshotByCommodity[strtolower((string) ($snapshot['nama_komoditas'] ?? ''))] = $snapshot;
 }
 
-$chartLabels = [];
-$chartValues = [];
-$chartCommodities = [];
-foreach ($forecastChart as $row) {
-    $chartLabels[] = (new DateTime((string) $row['tanggal_forecast']))->format('d M Y');
-    $chartValues[] = (float) $row['forecast_denormalized'];
-    $chartCommodities[] = (string) $row['komoditas'];
-}
+$forecastChartJson = json_encode($forecastChart, JSON_UNESCAPED_UNICODE);
 
 $safeCount = 0;
 $watchCount = 0;
@@ -793,22 +786,95 @@ $mascotSectionTips = [
 
             <!-- Chart + Status Overview -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div class="reveal rounded-3xl border border-slate-100 bg-white p-6 shadow-panel lg:col-span-2 relative overflow-hidden">
-                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h3 class="text-lg font-bold text-primary tracking-tight">Grafik Forecast Lintas Komoditas</h3>
-                            <p class="text-xs text-on-surface-variant">Horizon prediksi harian hingga 365 hari ke depan.</p>
+                <div class="reveal rounded-3xl border border-slate-100 bg-white p-6 shadow-panel lg:col-span-2 relative overflow-hidden flex flex-col justify-between">
+                    <div>
+                        <!-- Header with title & filters -->
+                        <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-primary tracking-tight">Grafik Analisis & Forecast Stok Pangan</h3>
+                                <p id="chartSubtitle" class="text-xs text-on-surface-variant">Solusi monitoring tren harian, agregasi bulanan & perbandingan komoditas.</p>
+                            </div>
+                            
+                            <!-- Commodity Selector Dropdown -->
+                            <div class="flex items-center gap-2">
+                                <label for="chartCommoditySelect" class="sr-only">Pilih Komoditas</label>
+                                <div class="relative">
+                                    <select id="chartCommoditySelect" class="rounded-xl border border-slate-200 bg-slate-50 py-2 pl-3 pr-8 text-xs font-bold text-primary outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10">
+                                        <option value="ALL">Semua Komoditas</option>
+                                        <?php if (!empty($forecastCommodityOptions)): ?>
+                                            <?php foreach ($forecastCommodityOptions as $opt): ?>
+                                                <option value="<?= e($opt) ?>"><?= e($opt) ?></option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-3 text-xs font-bold text-slate-500">
-                            <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-primary/20"></span> Predicted</span>
+
+                        <!-- Granularity / Mode Toggles bar -->
+                        <div class="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-100/70 p-1.5 text-xs font-bold">
+                            <div class="flex flex-wrap items-center gap-1" id="chartModeToggleGroup">
+                                <button type="button" data-mode="daily" class="chart-mode-btn is-active rounded-xl bg-white px-3 py-1.5 text-primary shadow-sm transition hover:text-primary">
+                                    <span class="material-symbols-outlined text-[15px] align-[-2px]">calendar_today</span> Per Hari
+                                </button>
+                                <button type="button" data-mode="weekly" class="chart-mode-btn rounded-xl px-3 py-1.5 text-slate-600 transition hover:bg-white/60 hover:text-primary">
+                                    <span class="material-symbols-outlined text-[15px] align-[-2px]">date_range</span> Per Minggu
+                                </button>
+                                <button type="button" data-mode="monthly" class="chart-mode-btn rounded-xl px-3 py-1.5 text-slate-600 transition hover:bg-white/60 hover:text-primary">
+                                    <span class="material-symbols-outlined text-[15px] align-[-2px]">calendar_month</span> Per Bulan
+                                </button>
+                                <button type="button" data-mode="commodity" class="chart-mode-btn rounded-xl px-3 py-1.5 text-slate-600 transition hover:bg-white/60 hover:text-primary">
+                                    <span class="material-symbols-outlined text-[15px] align-[-2px]">bar_chart</span> Per Komoditas
+                                </button>
+                            </div>
+                            <div id="chartLegendContainer" class="flex flex-wrap items-center gap-2 px-2 text-[11px] font-semibold text-slate-600">
+                                <!-- Legend badges populated by JS -->
+                            </div>
                         </div>
-                    </div>
-                    <div class="chart-shell relative min-h-[320px] rounded-2xl bg-slate-50/50 border border-slate-100/50 p-4 sm:p-6">
-                        <div id="chartSkeleton" class="skeleton-shell absolute inset-0 z-[1] grid grid-cols-1 gap-4 p-6">
-                            <div class="skeleton-block h-6 w-40 rounded-lg"></div>
-                            <div class="skeleton-block h-full min-h-[220px] rounded-2xl"></div>
+
+                        <!-- Date Range & Preset Filter Bar -->
+                        <div class="mb-4 flex flex-col gap-2.5 rounded-2xl border border-slate-200/60 bg-slate-50/50 p-2.5 sm:flex-row sm:items-center sm:justify-between text-xs">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="material-symbols-outlined text-slate-400 text-sm">filter_alt</span>
+                                <span class="font-bold text-slate-600 text-[11px]">Range:</span>
+                                <input type="date" id="chartStartDate" class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-primary outline-none transition focus:border-primary">
+                                <span class="text-slate-400 text-[11px]">s/d</span>
+                                <input type="date" id="chartEndDate" class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-primary outline-none transition focus:border-primary">
+                            </div>
+                            <div class="flex flex-wrap items-center gap-1.5" id="chartPresetGroup">
+                                <span class="font-bold text-slate-400 text-[10px] uppercase mr-0.5">Preset:</span>
+                                <button type="button" data-days="7" class="chart-preset-btn rounded-lg bg-white border border-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-600 hover:border-primary hover:text-primary transition">7 Hari</button>
+                                <button type="button" data-days="30" class="chart-preset-btn rounded-lg bg-primary text-white border border-primary px-2 py-0.5 text-[10px] font-bold shadow-sm transition">30 Hari</button>
+                                <button type="button" data-days="90" class="chart-preset-btn rounded-lg bg-white border border-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-600 hover:border-primary hover:text-primary transition">90 Hari</button>
+                                <button type="button" data-days="180" class="chart-preset-btn rounded-lg bg-white border border-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-600 hover:border-primary hover:text-primary transition">180 Hari</button>
+                                <button type="button" data-days="365" class="chart-preset-btn rounded-lg bg-white border border-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-600 hover:border-primary hover:text-primary transition">Semua</button>
+                            </div>
                         </div>
-                        <canvas id="forecastSummaryChart" class="!h-[320px] !w-full"></canvas>
+
+                        <!-- Dynamic KPI Stat Pill Bar -->
+                        <div class="mb-4 grid grid-cols-3 gap-3">
+                            <div class="rounded-2xl border border-slate-100 bg-slate-50/50 p-3 text-center transition hover:bg-slate-50">
+                                <span class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Rata-rata Prediksi</span>
+                                <strong id="kpiAvgVal" class="mt-0.5 block font-outfit text-sm font-extrabold text-primary">-</strong>
+                            </div>
+                            <div class="rounded-2xl border border-slate-100 bg-slate-50/50 p-3 text-center transition hover:bg-slate-50">
+                                <span class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Nilai Tertinggi (Puncak)</span>
+                                <strong id="kpiMaxVal" class="mt-0.5 block font-outfit text-sm font-extrabold text-secondary">-</strong>
+                            </div>
+                            <div class="rounded-2xl border border-slate-100 bg-slate-50/50 p-3 text-center transition hover:bg-slate-50">
+                                <span class="block text-[9px] font-extrabold uppercase tracking-wider text-slate-400">Nilai Terendah (Lembah)</span>
+                                <strong id="kpiMinVal" class="mt-0.5 block font-outfit text-sm font-extrabold text-error">-</strong>
+                            </div>
+                        </div>
+
+                        <!-- Chart Shell -->
+                        <div class="chart-shell relative min-h-[300px] rounded-2xl bg-slate-50/50 border border-slate-100/50 p-3 sm:p-4">
+                            <div id="chartSkeleton" class="skeleton-shell absolute inset-0 z-[1] grid grid-cols-1 gap-4 p-6">
+                                <div class="skeleton-block h-6 w-40 rounded-lg"></div>
+                                <div class="skeleton-block h-full min-h-[220px] rounded-2xl"></div>
+                            </div>
+                            <canvas id="forecastSummaryChart" class="!h-[300px] !w-full"></canvas>
+                        </div>
                     </div>
                 </div>
                 <div class="reveal flex flex-col justify-between rounded-3xl bg-gradient-to-br from-primary to-primary-container p-8 text-white shadow-glow relative overflow-hidden">
@@ -1262,10 +1328,18 @@ $mascotSectionTips = [
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     (() => {
-        const labels = <?= json_encode($chartLabels, JSON_UNESCAPED_UNICODE) ?>;
-        const values = <?= json_encode($chartValues, JSON_UNESCAPED_UNICODE) ?>;
-        const commodities = <?= json_encode($chartCommodities, JSON_UNESCAPED_UNICODE) ?>;
+        const rawChartData = <?= $forecastChartJson ?>;
         const canvas = document.getElementById('forecastSummaryChart');
+        const modeButtons = document.querySelectorAll('.chart-mode-btn');
+        const commoditySelect = document.getElementById('chartCommoditySelect');
+        const startDateInput = document.getElementById('chartStartDate');
+        const endDateInput = document.getElementById('chartEndDate');
+        const presetButtons = document.querySelectorAll('.chart-preset-btn');
+        const subtitleEl = document.getElementById('chartSubtitle');
+        const legendContainer = document.getElementById('chartLegendContainer');
+        const kpiAvgVal = document.getElementById('kpiAvgVal');
+        const kpiMaxVal = document.getElementById('kpiMaxVal');
+        const kpiMinVal = document.getElementById('kpiMinVal');
         const navLinks = document.querySelectorAll('.nav-link');
         const sections = [...document.querySelectorAll('main section[id]')];
         const progressBars = document.querySelectorAll('.progress-bar');
@@ -1277,31 +1351,344 @@ $mascotSectionTips = [
         const mobileMenuButton = document.getElementById('mobileMenuButton');
         const mobileNavPanel = document.getElementById('mobileNavPanel');
 
-        if (canvas && labels.length > 0) {
-            const ctx = canvas.getContext('2d');
-            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(15, 59, 117, 0.28)');
-            gradient.addColorStop(1, 'rgba(13, 148, 136, 0.01)');
+        let currentChartMode = 'daily';
+        let currentCommodityFilter = 'ALL';
+        let chartInstance = null;
 
-            new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: 'Prediksi Stok',
-                        data: values,
-                        borderColor: '#0f3b75',
+        const dailyData = rawChartData.daily || [];
+        const weeklyData = rawChartData.weekly || [];
+        const monthlyData = rawChartData.monthly || [];
+        const summaryData = rawChartData.commoditySummary || [];
+
+        // Determine date bounds from daily forecast data
+        let minDateStr = '';
+        let maxDateStr = '';
+        if (dailyData.length > 0) {
+            const allDates = dailyData.map(d => d.tanggal_forecast).sort();
+            minDateStr = allDates[0];
+            maxDateStr = allDates[allDates.length - 1];
+        }
+
+        const addDays = (dateStr, days) => {
+            const d = new Date(dateStr);
+            d.setDate(d.getDate() + (days - 1));
+            return d.toISOString().split('T')[0];
+        };
+
+        // Initialize date inputs
+        if (startDateInput && endDateInput && minDateStr && maxDateStr) {
+            startDateInput.min = minDateStr;
+            startDateInput.max = maxDateStr;
+            endDateInput.min = minDateStr;
+            endDateInput.max = maxDateStr;
+
+            startDateInput.value = minDateStr;
+            endDateInput.value = addDays(minDateStr, 30);
+        }
+
+        const commodityColorPalette = [
+            { stroke: '#0d9488', fill: 'rgba(13, 148, 136, 0.15)' },  // Teal
+            { stroke: '#d97706', fill: 'rgba(217, 119, 6, 0.15)' },  // Amber
+            { stroke: '#e11d48', fill: 'rgba(225, 29, 72, 0.15)' },  // Rose
+            { stroke: '#4f46e5', fill: 'rgba(79, 70, 229, 0.15)' },  // Indigo
+            { stroke: '#0284c7', fill: 'rgba(2, 132, 199, 0.15)' },  // Sky
+            { stroke: '#10b981', fill: 'rgba(16, 185, 129, 0.15)' }, // Emerald
+            { stroke: '#8b5cf6', fill: 'rgba(139, 92, 246, 0.15)' }, // Purple
+        ];
+
+        const getColorForIndex = (idx) => commodityColorPalette[idx % commodityColorPalette.length];
+
+        const formatNumber = (num, digits = 2) => {
+            if (num === null || num === undefined || isNaN(num)) return '-';
+            return Number(num).toLocaleString('id-ID', { maximumFractionDigits: digits, minimumFractionDigits: digits });
+        };
+
+        const updateKPIs = (values, unit = '') => {
+            if (!values || values.length === 0) {
+                if (kpiAvgVal) kpiAvgVal.textContent = '-';
+                if (kpiMaxVal) kpiMaxVal.textContent = '-';
+                if (kpiMinVal) kpiMinVal.textContent = '-';
+                return;
+            }
+            const sum = values.reduce((acc, v) => acc + v, 0);
+            const avg = sum / values.length;
+            const max = Math.max(...values);
+            const min = Math.min(...values);
+
+            const unitStr = unit ? ` ${unit}` : '';
+            if (kpiAvgVal) kpiAvgVal.textContent = `${formatNumber(avg)}${unitStr}`;
+            if (kpiMaxVal) kpiMaxVal.textContent = `${formatNumber(max)}${unitStr}`;
+            if (kpiMinVal) kpiMinVal.textContent = `${formatNumber(min)}${unitStr}`;
+        };
+
+        const buildLegend = (datasets) => {
+            if (!legendContainer) return;
+            legendContainer.innerHTML = '';
+            if (datasets.length <= 1) return;
+
+            datasets.forEach(ds => {
+                const badge = document.createElement('span');
+                badge.className = 'inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200/80 px-2.5 py-1 text-[10px] font-bold text-slate-700 shadow-sm';
+                badge.innerHTML = `<span class="h-2 w-2 rounded-full" style="background-color: ${ds.borderColor || ds.backgroundColor}"></span> ${ds.label}`;
+                legendContainer.appendChild(badge);
+            });
+        };
+
+        const renderChart = () => {
+            if (!canvas) return;
+
+            if (chartInstance) {
+                chartInstance.destroy();
+                chartInstance = null;
+            }
+
+            const ctx = canvas.getContext('2d');
+            const startDate = startDateInput?.value || minDateStr;
+            const endDate = endDateInput?.value || maxDateStr;
+
+            let chartType = 'line';
+            let labels = [];
+            let datasets = [];
+            let allValues = [];
+            let primaryUnit = '';
+
+            if (currentChartMode === 'daily') {
+                if (subtitleEl) subtitleEl.textContent = 'Tren prediksi harian stok pangan (Filter Range Tanggal).';
+
+                // Filter daily data by date range
+                let filtered = dailyData.filter(d => d.tanggal_forecast >= startDate && d.tanggal_forecast <= endDate);
+                if (currentCommodityFilter !== 'ALL') {
+                    filtered = filtered.filter(item => item.komoditas.toLowerCase() === currentCommodityFilter.toLowerCase());
+                }
+
+                if (currentCommodityFilter !== 'ALL') {
+                    labels = filtered.map(item => {
+                        const d = new Date(item.tanggal_forecast);
+                        return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                    });
+                    const vals = filtered.map(item => Number(item.forecast_denormalized));
+                    allValues = vals;
+                    primaryUnit = filtered[0]?.satuan || '';
+
+                    const color = getColorForIndex(0);
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+                    gradient.addColorStop(0, color.fill);
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.01)');
+
+                    datasets = [{
+                        label: currentCommodityFilter,
+                        data: vals,
+                        borderColor: color.stroke,
                         backgroundColor: gradient,
                         fill: true,
                         tension: 0.35,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: '#0d9488',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                    }]
-                },
+                        borderWidth: 2.5,
+                        pointRadius: vals.length <= 30 ? 3 : 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: color.stroke,
+                    }];
+                } else {
+                    const commodities = [...new Set(filtered.map(d => d.komoditas))];
+                    const dates = [...new Set(filtered.map(d => d.tanggal_forecast))].sort();
+
+                    labels = dates.map(dt => {
+                        const d = new Date(dt);
+                        return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                    });
+
+                    const dateMap = {};
+                    dates.forEach((dt, idx) => { dateMap[dt] = idx; });
+
+                    commodities.forEach((comm, idx) => {
+                        const color = getColorForIndex(idx);
+                        const commRows = filtered.filter(d => d.komoditas === comm);
+                        const dataArray = new Array(dates.length).fill(null);
+
+                        commRows.forEach(r => {
+                            const pos = dateMap[r.tanggal_forecast];
+                            if (pos !== undefined) {
+                                const val = Number(r.forecast_denormalized);
+                                dataArray[pos] = val;
+                                allValues.push(val);
+                            }
+                        });
+
+                        datasets.push({
+                            label: comm,
+                            data: dataArray,
+                            borderColor: color.stroke,
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0.35,
+                            borderWidth: 2.5,
+                            pointRadius: dates.length <= 30 ? 3 : 0,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: color.stroke,
+                        });
+                    });
+                }
+
+            } else if (currentChartMode === 'weekly') {
+                if (subtitleEl) subtitleEl.textContent = 'Agregasi rata-rata prediksi stok per minggu (ISO Week).';
+
+                // Filter weekly data overlapping with date range
+                let filtered = weeklyData.filter(w => w.start_date <= endDate && w.end_date >= startDate);
+                if (currentCommodityFilter !== 'ALL') {
+                    filtered = filtered.filter(item => item.komoditas.toLowerCase() === currentCommodityFilter.toLowerCase());
+                }
+
+                if (currentCommodityFilter !== 'ALL') {
+                    labels = filtered.map(item => 'Minggu ' + item.week_label);
+                    const vals = filtered.map(item => Number(item.avg_forecast));
+                    allValues = vals;
+                    primaryUnit = filtered[0]?.satuan || '';
+
+                    const color = getColorForIndex(0);
+                    chartType = 'bar';
+
+                    datasets = [{
+                        label: currentCommodityFilter + ' (Mingguan)',
+                        data: vals,
+                        backgroundColor: color.stroke,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 24,
+                    }];
+                } else {
+                    const commodities = [...new Set(filtered.map(d => d.komoditas))];
+                    const weekLabels = [...new Set(filtered.map(d => 'Minggu ' + d.week_label))];
+                    labels = weekLabels;
+
+                    commodities.forEach((comm, idx) => {
+                        const color = getColorForIndex(idx);
+                        const commRows = filtered.filter(d => d.komoditas === comm);
+                        const dataArray = weekLabels.map(wl => {
+                            const found = commRows.find(r => 'Minggu ' + r.week_label === wl);
+                            const val = found ? Number(found.avg_forecast) : null;
+                            if (val !== null) allValues.push(val);
+                            return val;
+                        });
+
+                        datasets.push({
+                            label: comm,
+                            data: dataArray,
+                            borderColor: color.stroke,
+                            backgroundColor: color.fill,
+                            fill: false,
+                            tension: 0.35,
+                            borderWidth: 2.5,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: color.stroke,
+                        });
+                    });
+                }
+
+            } else if (currentChartMode === 'monthly') {
+                if (subtitleEl) subtitleEl.textContent = 'Agregasi rata-rata prediksi stok per bulan (horizon 12 bulan).';
+
+                const startYM = startDate.substring(0, 7);
+                const endYM = endDate.substring(0, 7);
+
+                let filtered = monthlyData.filter(m => m.ym_code >= startYM && m.ym_code <= endYM);
+                if (filtered.length === 0) filtered = monthlyData; // Fallback if range is smaller than a month
+
+                if (currentCommodityFilter !== 'ALL') {
+                    filtered = filtered.filter(item => item.komoditas.toLowerCase() === currentCommodityFilter.toLowerCase());
+                }
+
+                if (currentCommodityFilter !== 'ALL') {
+                    labels = filtered.map(item => item.month_label);
+                    const vals = filtered.map(item => Number(item.avg_forecast));
+                    allValues = vals;
+                    primaryUnit = filtered[0]?.satuan || '';
+
+                    const color = getColorForIndex(0);
+                    chartType = 'bar';
+
+                    datasets = [{
+                        label: currentCommodityFilter + ' (Bulanan)',
+                        data: vals,
+                        backgroundColor: color.stroke,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 24,
+                    }];
+                } else {
+                    const commodities = [...new Set(filtered.map(d => d.komoditas))];
+                    const months = [...new Set(filtered.map(d => d.month_label))];
+                    labels = months;
+
+                    commodities.forEach((comm, idx) => {
+                        const color = getColorForIndex(idx);
+                        const commRows = filtered.filter(d => d.komoditas === comm);
+                        const dataArray = months.map(m => {
+                            const found = commRows.find(r => r.month_label === m);
+                            const val = found ? Number(found.avg_forecast) : null;
+                            if (val !== null) allValues.push(val);
+                            return val;
+                        });
+
+                        datasets.push({
+                            label: comm,
+                            data: dataArray,
+                            borderColor: color.stroke,
+                            backgroundColor: color.fill,
+                            fill: false,
+                            tension: 0.35,
+                            borderWidth: 2.5,
+                            pointRadius: 4,
+                            pointHoverRadius: 7,
+                            pointBackgroundColor: color.stroke,
+                        });
+                    });
+                }
+
+            } else if (currentChartMode === 'commodity') {
+                if (subtitleEl) subtitleEl.textContent = 'Perbandingan rata-rata volume prediksi antar komoditas pada range terpilih.';
+                chartType = 'bar';
+
+                // Recalculate commodity summary averages for the selected date range
+                const filteredDaily = dailyData.filter(d => d.tanggal_forecast >= startDate && d.tanggal_forecast <= endDate);
+                const commodities = [...new Set(filteredDaily.map(d => d.komoditas))];
+
+                let rangeSummary = commodities.map(comm => {
+                    const commRows = filteredDaily.filter(d => d.komoditas === comm);
+                    const vals = commRows.map(r => Number(r.forecast_denormalized));
+                    const avg = vals.reduce((a, b) => a + b, 0) / (vals.length || 1);
+                    return {
+                        komoditas: comm,
+                        avg_forecast: Math.round(avg * 100) / 100,
+                        satuan: commRows[0]?.satuan || ''
+                    };
+                });
+
+                if (currentCommodityFilter !== 'ALL') {
+                    rangeSummary = rangeSummary.filter(item => item.komoditas.toLowerCase() === currentCommodityFilter.toLowerCase());
+                }
+
+                labels = rangeSummary.map(item => item.komoditas);
+                const vals = rangeSummary.map(item => Number(item.avg_forecast));
+                allValues = vals;
+
+                const bgColors = rangeSummary.map((item, idx) => getColorForIndex(idx).stroke);
+
+                datasets = [{
+                    label: 'Rata-rata Forecast Range',
+                    data: vals,
+                    backgroundColor: bgColors,
+                    borderRadius: 10,
+                    borderSkipped: false,
+                    barThickness: 32,
+                }];
+            }
+
+            buildLegend(datasets);
+            updateKPIs(allValues, primaryUnit);
+
+            chartInstance = new Chart(canvas, {
+                type: chartType,
+                data: { labels, datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -1314,28 +1701,99 @@ $mascotSectionTips = [
                             bodyFont: { size: 12, family: 'Plus Jakarta Sans' },
                             padding: 12,
                             cornerRadius: 12,
-                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderColor: 'rgba(255, 255, 255, 0.15)',
                             borderWidth: 1,
                             callbacks: {
-                                title: (items) => items[0] ? `${commodities[items[0].dataIndex]} - ${items[0].label}` : '',
-                                label: (context) => ` Forecast: ${Number(context.raw).toLocaleString('id-ID', { maximumFractionDigits: 2 })}`
+                                label: (context) => {
+                                    const val = Number(context.raw);
+                                    const dsName = context.dataset.label || '';
+                                    const itemUnit = primaryUnit || (summaryData.find(s => s.komoditas === context.label)?.satuan || '');
+                                    const unitLabel = itemUnit ? ` ${itemUnit}` : '';
+                                    return ` ${dsName}: ${formatNumber(val)}${unitLabel}`;
+                                }
                             }
                         }
                     },
                     scales: {
                         x: {
-                            grid: { color: 'rgba(148, 163, 184, 0.06)' },
-                            ticks: { color: '#64748b', maxRotation: 0, autoSkip: true, maxTicksLimit: 6, font: { family: 'Plus Jakarta Sans', weight: 'bold', size: 10 } }
+                            grid: { color: 'rgba(148, 163, 184, 0.08)' },
+                            ticks: {
+                                color: '#64748b',
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: currentChartMode === 'daily' ? 7 : 12,
+                                font: { family: 'Plus Jakarta Sans', weight: 'bold', size: 10 }
+                            }
                         },
                         y: {
                             beginAtZero: false,
-                            grid: { color: 'rgba(148, 163, 184, 0.06)' },
-                            ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 10 } }
+                            grid: { color: 'rgba(148, 163, 184, 0.08)' },
+                            ticks: {
+                                color: '#64748b',
+                                font: { family: 'Plus Jakarta Sans', size: 10 },
+                                callback: (val) => Number(val).toLocaleString('id-ID')
+                            }
                         }
                     }
                 }
             });
+        };
+
+        // Event listener for mode buttons
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeButtons.forEach(b => {
+                    b.classList.remove('is-active', 'bg-white', 'text-primary', 'shadow-sm');
+                    b.classList.add('text-slate-600');
+                });
+                btn.classList.add('is-active', 'bg-white', 'text-primary', 'shadow-sm');
+                btn.classList.remove('text-slate-600');
+
+                currentChartMode = btn.dataset.mode || 'daily';
+                renderChart();
+            });
+        });
+
+        // Event listener for commodity filter
+        if (commoditySelect) {
+            commoditySelect.addEventListener('change', (e) => {
+                currentCommodityFilter = e.target.value || 'ALL';
+                renderChart();
+            });
         }
+
+        // Event listeners for date range inputs
+        if (startDateInput && endDateInput) {
+            startDateInput.addEventListener('change', () => {
+                presetButtons.forEach(b => b.classList.remove('bg-primary', 'text-white', 'border-primary'));
+                renderChart();
+            });
+            endDateInput.addEventListener('change', () => {
+                presetButtons.forEach(b => b.classList.remove('bg-primary', 'text-white', 'border-primary'));
+                renderChart();
+            });
+        }
+
+        // Event listeners for preset buttons
+        presetButtons.forEach(pBtn => {
+            pBtn.addEventListener('click', () => {
+                presetButtons.forEach(b => {
+                    b.classList.remove('bg-primary', 'text-white', 'border-primary');
+                    b.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+                });
+                pBtn.classList.add('bg-primary', 'text-white', 'border-primary');
+                pBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+
+                const days = Number(pBtn.dataset.days || 30);
+                if (startDateInput && endDateInput && minDateStr) {
+                    startDateInput.value = minDateStr;
+                    endDateInput.value = addDays(minDateStr, days);
+                }
+                renderChart();
+            });
+        });
+
+        renderChart();
 
         window.setTimeout(() => {
             chartSkeleton?.classList.add('is-hidden');
