@@ -291,21 +291,21 @@ final class DataPreprocessingLstm
         $pdo = Database::connection();
 
         return $pdo->query(
-            'SELECT komoditas,
-                    COUNT(*) AS total_data,
-                    SUM(CASE WHEN status_anomali = "Missing Value" THEN 1 ELSE 0 END) AS missing_value,
-                    SUM(CASE WHEN status_anomali = "Outlier" THEN 1 ELSE 0 END) AS outlier,
-                    SUM(CASE WHEN set_data = "Latih" THEN 1 ELSE 0 END) AS data_latih,
-                    SUM(CASE WHEN set_data = "Uji" THEN 1 ELSE 0 END) AS data_uji,
-                    MIN(stok_bersih) AS min_stok_bersih,
-                    MAX(stok_bersih) AS max_stok_bersih,
-                    AVG(normalisasi_minmax) AS rata_normalisasi,
-                    MIN(format_waktu) AS tanggal_awal,
-                    MAX(format_waktu) AS tanggal_akhir
+            'SELECT komoditas AS "Komoditas",
+                    COUNT(*) AS "Total Data",
+                    SUM(CASE WHEN status_anomali = "Missing Value" THEN 1 ELSE 0 END) AS "Missing Value",
+                    SUM(CASE WHEN status_anomali = "Outlier" THEN 1 ELSE 0 END) AS "Outlier",
+                    SUM(CASE WHEN set_data = "Latih" THEN 1 ELSE 0 END) AS "Data Latih",
+                    SUM(CASE WHEN set_data = "Uji" THEN 1 ELSE 0 END) AS "Data Uji",
+                    MIN(stok_bersih) AS "Min Stok Bersih",
+                    MAX(stok_bersih) AS "Max Stok Bersih",
+                    ROUND(AVG(normalisasi_minmax), 6) AS "Rata Normalisasi",
+                    MIN(format_waktu) AS "Tanggal Awal",
+                    MAX(format_waktu) AS "Tanggal Akhir"
              FROM data_preprocessing_lstm
              GROUP BY komoditas
              ORDER BY komoditas ASC'
-        )->fetchAll();
+        )->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public static function previewExportRows(): array
@@ -314,21 +314,18 @@ final class DataPreprocessingLstm
         $pdo = Database::connection();
 
         return $pdo->query(
-            'SELECT id,
-                    tanggal_asli,
-                    format_waktu,
-                    komoditas,
-                    stok_mentah,
-                    status_anomali,
-                    stok_bersih,
-                    normalisasi_minmax,
-                    input_sekuens_x,
-                    target_label_y,
-                    set_data,
-                    created_at
+            'SELECT format_waktu AS "Tanggal",
+                    komoditas AS "Komoditas",
+                    IFNULL(stok_mentah, "-") AS "Stok Mentah",
+                    status_anomali AS "Status Anomali",
+                    stok_bersih AS "Stok Bersih",
+                    ROUND(normalisasi_minmax, 6) AS "Normalisasi Min-Max",
+                    input_sekuens_x AS "Input Sekuens X",
+                    ROUND(target_label_y, 6) AS "Target Label Y",
+                    set_data AS "Set Data"
              FROM data_preprocessing_lstm
-             ORDER BY komoditas ASC, format_waktu ASC'
-        )->fetchAll();
+             ORDER BY format_waktu DESC, komoditas ASC'
+        )->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public static function evaluationSummary(string $commodity = ''): array
