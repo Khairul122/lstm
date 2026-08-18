@@ -63,7 +63,10 @@ foreach ($stokSummary['latest_snapshot'] as $snapshot) {
     $snapshotByCommodity[strtolower((string) ($snapshot['nama_komoditas'] ?? ''))] = $snapshot;
 }
 
-$forecastChartJson = json_encode($forecastChart, JSON_UNESCAPED_UNICODE);
+// JSON_HEX_TAG/APOS/QUOT/AMP menetralkan karakter yang bisa memutus konteks <script> (mis.
+// nama komoditas yang kebetulan mengandung "</script>") -- halaman ini publik, jadi payload
+// tersebut akan tereksekusi di browser setiap pengunjung, bukan cuma admin yang menginput.
+$forecastChartJson = json_encode($forecastChart, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 
 $safeCount = 0;
 $watchCount = 0;
@@ -1966,10 +1969,10 @@ $mascotSectionTips = [
         }
 
         // ===================== MASCOT SI PADI =====================
-        const mascotFaces = <?= json_encode($mascotFaces, JSON_UNESCAPED_UNICODE) ?>;
-        const mascotKnowledge = <?= json_encode($mascotQuickQuestions, JSON_UNESCAPED_UNICODE) ?>;
-        const mascotSectionTips = <?= json_encode($mascotSectionTips, JSON_UNESCAPED_UNICODE) ?>;
-        const mascotForecastCards = <?= json_encode($forecastCards, JSON_UNESCAPED_UNICODE) ?>;
+        const mascotFaces = <?= json_encode($mascotFaces, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+        const mascotKnowledge = <?= json_encode($mascotQuickQuestions, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+        const mascotSectionTips = <?= json_encode($mascotSectionTips, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+        const mascotForecastCards = <?= json_encode($forecastCards, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 
         const mascotShell = document.getElementById('mascotShell');
         const mascotToggle = document.getElementById('mascotToggle');

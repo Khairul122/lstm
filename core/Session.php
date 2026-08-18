@@ -9,6 +9,15 @@ final class Session
     public static function start(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
+            // httponly mencegah cookie sesi dibaca lewat JavaScript (mitigasi pencurian sesi via
+            // XSS); samesite=Lax mencegah cookie ikut terkirim pada request cross-site.
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'httponly' => true,
+                'samesite' => 'Lax',
+                'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+            ]);
             session_start();
         }
     }

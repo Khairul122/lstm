@@ -94,6 +94,24 @@ final class LstmController extends Controller
 
         $scriptPath = realpath('database/train_lstm_batch.py');
         $pythonBin = getenv('LSTM_PYTHON_BIN') ?: 'D:/Alternatif_D/laragon/bin/python/python-3.13/python.exe';
+
+        // Tanpa pengecekan ini, script yang hilang/pindah membuat popen() tetap "berhasil"
+        // melaunch command dengan path kosong -- batch nyangkut di 'queued' selamanya dan output
+        // (termasuk traceback Python) hilang total karena diarahkan ke NUL, jadi tidak ada jejak
+        // kegagalan yang terlihat sama sekali dari admin panel.
+        if ($scriptPath === false || !is_file($pythonBin)) {
+            $missing = $scriptPath === false ? 'database/train_lstm_batch.py tidak ditemukan' : "interpreter Python tidak ditemukan di {$pythonBin}";
+            LstmBatchRun::markFailed($batchId, "Training gagal dimulai: {$missing}.");
+
+            Session::flash('flash_popup', [
+                'type' => 'error',
+                'title' => 'Training Gagal Dimulai',
+                'message' => "Training tidak bisa dijalankan: {$missing}. Hubungi administrator sistem.",
+            ]);
+
+            $this->redirect('/lstm/batch/' . $batchId);
+        }
+
         $command = sprintf('start /B "" "%s" "%s" %d > NUL 2>&1', $pythonBin, $scriptPath, $batchId);
         pclose(popen($command, "r"));
 

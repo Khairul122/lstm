@@ -362,6 +362,13 @@ final class DataPreprocessingLstm
         return $stmt->fetchAll();
     }
 
+    public static function resetAll(): void
+    {
+        self::ensureTable();
+        $pdo = Database::connection();
+        $pdo->exec('TRUNCATE TABLE data_preprocessing_lstm');
+    }
+
     private static function ensureTable(): void
     {
         $pdo = Database::connection();
@@ -475,6 +482,19 @@ final class DataPreprocessingLstm
                 $trainRawValues[] = (float) $item['stok_mentah'];
             }
         }
+
+        // Fallback untuk kasus degenerate: komoditas dengan riwayat stok sangat sedikit (mis. baru
+        // 1-2 hari data) membuat floor(jumlah_hari * train_ratio) == 0, sehingga porsi latih kosong.
+        // Tanpa fallback ini Q1/Q3 selalu 0 dan SEMUA baris tertandai "Outlier" secara keliru. Pada
+        // kasus seperti ini memang tidak ada batas latih/uji yang berarti, jadi aman memakai seluruh
+        // baris komoditas sebagai statistik cadangan.
+        if ($trainRawValues === []) {
+            foreach ($skeleton as $item) {
+                if ($item['stok_mentah'] !== null) {
+                    $trainRawValues[] = (float) $item['stok_mentah'];
+                }
+            }
+        }
         sort($trainRawValues);
         $q1 = self::quantile($trainRawValues, 0.25);
         $q3 = self::quantile($trainRawValues, 0.75);
@@ -505,7 +525,7 @@ final class DataPreprocessingLstm
                 continue;
             }
 
-            $prepared[$index]['stok_bersih'] = self::replacementValue($prepared, $index, $median);
+            $prepared[$index]['stok_bersih'] = self::replacementValue($prepared, $index, $splitIndex, $median);
         }
 
         // PENCEGAHAN DATA LEAKAGE: parameter normalisasi Min-Max (xmin, xmax) juga HANYA dihitung
@@ -517,6 +537,17 @@ final class DataPreprocessingLstm
             static fn (array $item): float => (float) $item['stok_bersih'],
             array_slice($prepared, 0, $splitIndex)
         );
+
+        // Fallback yang sama seperti di atas: porsi latih kosong membuat min()/max() throw
+        // ValueError (crash total, bukan exception yang bisa ditangani dengan baik) kalau tidak
+        // dijaga di sini.
+        if ($trainCleanValues === []) {
+            $trainCleanValues = array_map(
+                static fn (array $item): float => (float) $item['stok_bersih'],
+                $prepared
+            );
+        }
+
         $minClean = min($trainCleanValues);
         $maxClean = max($trainCleanValues);
         $range = $maxClean - $minClean;
@@ -629,10 +660,17 @@ final class DataPreprocessingLstm
         }
     }
 
-    private static function replacementValue(array $rows, int $currentIndex, float $fallback): float
+    private static function replacementValue(array $rows, int $currentIndex, int $splitIndex, float $fallback): float
     {
+        // PENCEGAHAN DATA LEAKAGE: pencarian tetangga untuk interpolasi tidak boleh melewati batas
+        // latih/uji. Tanpa batas ini, nilai bersih pada baris LATIH bisa "mengintip" angka mentah
+        // dari periode UJI (atau sebaliknya) lewat proses imputasi missing value/outlier.
+        $isTrainRow = $currentIndex < $splitIndex;
+        $lowerBound = $isTrainRow ? 0 : $splitIndex;
+        $upperBound = $isTrainRow ? $splitIndex - 1 : count($rows) - 1;
+
         $previous = null;
-        for ($index = $currentIndex - 1; $index >= 0; $index--) {
+        for ($index = $currentIndex - 1; $index >= $lowerBound; $index--) {
             if ($rows[$index]['status_anomali'] === 'Normal' && $rows[$index]['stok_mentah'] !== null) {
                 $previous = (float) $rows[$index]['stok_mentah'];
                 break;
@@ -640,7 +678,7 @@ final class DataPreprocessingLstm
         }
 
         $next = null;
-        for ($index = $currentIndex + 1; $index < count($rows); $index++) {
+        for ($index = $currentIndex + 1; $index <= $upperBound; $index++) {
             if ($rows[$index]['status_anomali'] === 'Normal' && $rows[$index]['stok_mentah'] !== null) {
                 $next = (float) $rows[$index]['stok_mentah'];
                 break;

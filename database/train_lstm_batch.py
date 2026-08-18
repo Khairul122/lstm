@@ -557,7 +557,12 @@ def train_for_commodity(connection, config: BatchConfig, commodity: str) -> None
             cursor, run_id, commodity, test_dates, y_test_denorm, y_pred_denorm
         )
 
-        latest_sequence = x_all[-1].reshape(config.sequence_length)
+        # Window awal forecast harus menyertakan nilai aktual hari TERAKHIR yang sudah
+        # diketahui. x_all[-1] adalah input yang dipakai model untuk memprediksi y_all[-1]
+        # (hari terakhir itu sendiri), jadi TIDAK menyertakan nilai aktualnya -- kalau dipakai
+        # langsung, prediksi H+1 jadi rekonstruksi ulang hari terakhir alih-alih forecast murni,
+        # dan seluruh 365 titik forecast berikutnya ikut bergeser (autoregresif).
+        latest_sequence = np.append(x_all[-1].reshape(config.sequence_length)[1:], y_all[-1])
         forecasts_norm = forecast_next_year(model, latest_sequence, 365)
         last_date = dates[-1]
         persist_forecasts(
@@ -575,6 +580,11 @@ def train_for_commodity(connection, config: BatchConfig, commodity: str) -> None
         connection.commit()
         print(f"[{commodity}] selesai dalam {int(time.time() - started)} detik")
     except Exception as exc:
+        # Buang tulisan parsial (mis. persist_metrics/persist_predictions yang sempat jalan
+        # sebelum langkah berikutnya gagal) sebelum menandai run ini "failed", supaya tidak ada
+        # sisa data setengah-jadi ikut ter-commit bersama status kegagalan.
+        connection.rollback()
+        cursor = connection.cursor()
         finish_run(cursor, run_id, "failed", None, str(exc))
         sync_batch_counters(cursor, config.batch_id)
         connection.commit()
@@ -627,33 +637,47 @@ def main() -> None:
     np.random.seed(42)
 
     try:
-        cursor = connection.cursor()
-        config = fetch_batch_config(cursor, batch_id)
-        update_batch_status(cursor, batch_id, "running")
-        cursor.execute(
-            "UPDATE lstm_batch_runs SET train_started_at = NOW() WHERE id = %s",
-            (batch_id,),
-        )
-        commodities = ensure_run_rows(cursor, batch_id)
-        connection.commit()
+        try:
+            cursor = connection.cursor()
+            config = fetch_batch_config(cursor, batch_id)
+            update_batch_status(cursor, batch_id, "running")
+            cursor.execute(
+                "UPDATE lstm_batch_runs SET train_started_at = NOW() WHERE id = %s",
+                (batch_id,),
+            )
+            commodities = ensure_run_rows(cursor, batch_id)
+            connection.commit()
 
-        if not commodities:
+            if not commodities:
+                update_batch_status(
+                    cursor,
+                    batch_id,
+                    "failed",
+                    "Tidak ada komoditas preprocessing untuk dilatih.",
+                )
+                connection.commit()
+                raise SystemExit("Tidak ada komoditas yang dapat dilatih.")
+
+            for commodity in commodities:
+                train_for_commodity(connection, config, commodity)
+
+            cursor = connection.cursor()
+            finalize_batch(cursor, batch_id)
+            connection.commit()
+            print(f"Batch {batch_id} selesai diproses.")
+        except Exception as exc:
+            # Tanpa handler ini, error yang terjadi DI LUAR train_for_commodity() (mis. saat
+            # fetch_batch_config/ensure_run_rows) membuat proses Python crash begitu saja dan
+            # lstm_batch_runs.status nyangkut di 'running'/'queued' selamanya -- tidak ada jejak
+            # kegagalan yang terlihat dari admin panel sama sekali.
+            connection.rollback()
+            cursor = connection.cursor()
             update_batch_status(
-                cursor,
-                batch_id,
-                "failed",
-                "Tidak ada komoditas preprocessing untuk dilatih.",
+                cursor, batch_id, "failed", f"Batch training crash: {exc}"
             )
             connection.commit()
-            raise SystemExit("Tidak ada komoditas yang dapat dilatih.")
-
-        for commodity in commodities:
-            train_for_commodity(connection, config, commodity)
-
-        cursor = connection.cursor()
-        finalize_batch(cursor, batch_id)
-        connection.commit()
-        print(f"Batch {batch_id} selesai diproses.")
+            print(f"Batch {batch_id} gagal: {exc}")
+            raise
     finally:
         connection.close()
 

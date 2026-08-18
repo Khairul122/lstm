@@ -323,7 +323,6 @@ def prepare_preprocessing(
 
     for commodity_name, rows in grouped.items():
         mapped: dict[str, dict[str, Any]] = {}
-        raw_values: list[float] = []
         code = str(rows[0]["kode_komoditas"])
         unit = str(rows[0]["satuan"])
 
@@ -337,45 +336,66 @@ def prepare_preprocessing(
                 "kode_komoditas": code,
                 "satuan": unit,
             }
-            if row["stok_mentah"] is not None:
-                raw_values.append(float(row["stok_mentah"]))
 
         if not mapped:
             continue
 
-        raw_values.sort()
-        q1 = quantile(raw_values, 0.25)
-        q3 = quantile(raw_values, 0.75)
-        iqr = q3 - q1
-        lower_bound = q1 - (1.5 * iqr)
-        upper_bound = q3 + (1.5 * iqr)
-        median = quantile(raw_values, 0.5)
-
         dates = sorted(mapped.keys())
         current_date = datetime.strptime(dates[0], "%Y-%m-%d").date()
         end_date = datetime.strptime(dates[-1], "%Y-%m-%d").date()
-        commodity_rows: list[dict[str, Any]] = []
 
-        while current_date <= end_date:
-            date_key = current_date.strftime("%Y-%m-%d")
+        # Bentuk kerangka baris untuk seluruh rentang tanggal kalender terlebih dahulu,
+        # sebelum menghitung statistik apa pun. Urutan operasi: skeleton -> split -> statistik.
+        skeleton: list[dict[str, Any]] = []
+        scan_date = current_date
+        while scan_date <= end_date:
+            date_key = scan_date.strftime("%Y-%m-%d")
             source = mapped.get(date_key)
-            raw_stock = source["stok_mentah"] if source is not None else None
-            status = "Normal"
-            if source is None or raw_stock is None:
-                status = "Missing Value"
-            elif raw_stock < lower_bound or raw_stock > upper_bound:
-                status = "Outlier"
-
-            commodity_rows.append(
+            skeleton.append(
                 {
                     "kode_komoditas": code,
                     "komoditas": commodity_name,
                     "satuan": unit,
                     "tanggal_asli": source["tanggal_asli"]
                     if source is not None
-                    else current_date,
-                    "format_waktu": current_date,
-                    "stok_mentah": raw_stock,
+                    else scan_date,
+                    "format_waktu": scan_date,
+                    "stok_mentah": source["stok_mentah"] if source is not None else None,
+                }
+            )
+            scan_date += timedelta(days=1)
+
+        # PENCEGAHAN DATA LEAKAGE: titik potong latih/uji dihitung lebih dulu,
+        # sebelum statistik apa pun, supaya Q1/Q3 dan Min-Max tidak pernah menyentuh data uji.
+        split_index = int(math.floor(len(skeleton) * config.train_ratio))
+
+        # PENCEGAHAN DATA LEAKAGE: Q1/Q3/IQR dihitung HANYA dari porsi data latih
+        # (baris kronologis sebelum split_index), bukan dari seluruh data historis.
+        train_raw_values = [
+            float(item["stok_mentah"])
+            for item in skeleton[:split_index]
+            if item["stok_mentah"] is not None
+        ]
+        train_raw_values.sort()
+        q1 = quantile(train_raw_values, 0.25)
+        q3 = quantile(train_raw_values, 0.75)
+        iqr = q3 - q1
+        lower_bound = q1 - (1.5 * iqr)
+        upper_bound = q3 + (1.5 * iqr)
+        median = quantile(train_raw_values, 0.5)
+
+        commodity_rows: list[dict[str, Any]] = []
+        for item in skeleton:
+            raw_stock = item["stok_mentah"]
+            status = "Normal"
+            if raw_stock is None:
+                status = "Missing Value"
+            elif raw_stock < lower_bound or raw_stock > upper_bound:
+                status = "Outlier"
+
+            commodity_rows.append(
+                {
+                    **item,
                     "status_anomali": status,
                     "batas_bawah_iqr": round(lower_bound, 2),
                     "batas_atas_iqr": round(upper_bound, 2),
@@ -385,7 +405,6 @@ def prepare_preprocessing(
                     "median_komoditas": round(median, 2),
                 }
             )
-            current_date += timedelta(days=1)
 
         for index, item in enumerate(commodity_rows):
             if item["status_anomali"] == "Normal" and item["stok_mentah"] is not None:
@@ -396,9 +415,13 @@ def prepare_preprocessing(
                 item["stok_bersih"] = cleaned
                 item["metode_imputasi"] = reason
 
-        clean_values = [float(item["stok_bersih"]) for item in commodity_rows]
-        min_clean = min(clean_values)
-        max_clean = max(clean_values)
+        # PENCEGAHAN DATA LEAKAGE: parameter Min-Max dihitung HANYA dari stok_bersih
+        # porsi data latih, bukan dari seluruh baris komoditas (latih + uji).
+        train_clean_values = [
+            float(item["stok_bersih"]) for item in commodity_rows[:split_index]
+        ]
+        min_clean = min(train_clean_values)
+        max_clean = max(train_clean_values)
         data_range = max_clean - min_clean
 
         normalized_series: list[float] = []
@@ -415,7 +438,6 @@ def prepare_preprocessing(
             item["normalisasi_minmax"] = normalized
             normalized_series.append(normalized)
 
-        split_index = int(math.floor(len(commodity_rows) * config.train_ratio))
         for index, item in enumerate(commodity_rows):
             sequence = build_sequence(normalized_series, index, config.sequence_length)
             item["input_sekuens_x"] = json.dumps(sequence, ensure_ascii=True)
@@ -652,8 +674,17 @@ def load_dataset(cursor, commodity: str) -> dict[str, object]:
         clean_values.append(float(row[3]))
         sets.append(row[4])
 
-    min_value = min(clean_values)
-    max_value = max(clean_values)
+    # PENCEGAHAN DATA LEAKAGE: xmin/xmax untuk (de)normalisasi harus sama dengan parameter
+    # yang dipakai prepare_preprocessing() saat menormalisasi, yaitu hanya dari porsi data
+    # latih (set_data == "Latih"), bukan dari seluruh baris komoditas (latih + uji).
+    train_clean_values = [
+        value for value, set_label in zip(clean_values, sets) if set_label == "Latih"
+    ]
+    if not train_clean_values:
+        raise RuntimeError(f"Tidak ada data latih untuk komoditas {commodity}.")
+
+    min_value = min(train_clean_values)
+    max_value = max(train_clean_values)
     data_range = max(max_value - min_value, 1e-9)
 
     x_np = np.array(x_all, dtype=np.float32)

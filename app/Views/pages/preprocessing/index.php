@@ -155,6 +155,29 @@ $previewPageNumbers = array_values(array_unique($previewPageNumbers));
                 </div>
             </section>
 
+            <section class="glass-card">
+                <div class="section-copy">
+                    <h2>Kelola Data Preprocessing</h2>
+                    <p>Jika ingin memulai ulang dari nol, gunakan reset semua. Proses ini akan menghapus seluruh baris hasil preprocessing (stok bersih, normalisasi, sekuens, dan pembagian latih/uji) untuk semua komoditas.</p>
+                </div>
+                <div class="cta-row">
+                    <form
+                        action="<?= e(base_url('/preprocessing/reset-all')) ?>"
+                        method="POST"
+                        data-confirm-dialog
+                        data-confirm-title="Reset Semua Data Preprocessing"
+                        data-confirm-message="Seluruh hasil preprocessing (stok bersih, normalisasi, sekuens, pembagian latih/uji) untuk semua komoditas akan dihapus permanen. Data stok historis asli tidak terpengaruh. Lanjutkan reset penuh?"
+                        data-confirm-badge="Danger Zone"
+                        data-confirm-action-label="Ya, Reset Semua"
+                        data-confirm-cancel-label="Batalkan"
+                        data-confirm-type="warning"
+                    >
+                        <?= csrf_field() ?>
+                        <button class="danger-outline" type="submit">Reset Semua</button>
+                    </form>
+                </div>
+            </section>
+
             <?php if ($logs !== []): ?>
                 <section class="log-card">
                     <div class="section-head">

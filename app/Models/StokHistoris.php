@@ -88,6 +88,30 @@ final class StokHistoris
         ];
     }
 
+    public static function existsForCommodityDate(int $idKomoditas, string $waktuCatat, ?int $exceptId = null): bool
+    {
+        $pdo = Database::connection();
+        $sql = 'SELECT id_stok FROM data_stok_historis WHERE id_komoditas = :id_komoditas AND waktu_catat = :waktu_catat';
+
+        if ($exceptId !== null) {
+            $sql .= ' AND id_stok != :except_id';
+        }
+
+        $sql .= ' LIMIT 1';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':id_komoditas', $idKomoditas, PDO::PARAM_INT);
+        $stmt->bindValue(':waktu_catat', $waktuCatat, PDO::PARAM_STR);
+
+        if ($exceptId !== null) {
+            $stmt->bindValue(':except_id', $exceptId, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+
+        return $stmt->fetchColumn() !== false;
+    }
+
     public static function find(int $idStok): ?array
     {
         $pdo = Database::connection();

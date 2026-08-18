@@ -55,7 +55,7 @@ final class StokHistorisController extends Controller
     public function store(): void
     {
         $payload = $this->sanitizePayload($_POST);
-        $validationError = $this->validatePayload($payload);
+        $validationError = $this->validatePayload($payload, null);
 
         if ($validationError !== null) {
             Session::flash('error', $validationError);
@@ -107,7 +107,7 @@ final class StokHistorisController extends Controller
         }
 
         $payload = $this->sanitizePayload($_POST);
-        $validationError = $this->validatePayload($payload);
+        $validationError = $this->validatePayload($payload, $stokId);
 
         if ($validationError !== null) {
             Session::flash('error', $validationError);
@@ -157,7 +157,7 @@ final class StokHistorisController extends Controller
         ];
     }
 
-    private function validatePayload(array $payload): ?string
+    private function validatePayload(array $payload, ?int $exceptId): ?string
     {
         if ($payload['id_komoditas'] === '' || $payload['waktu_catat'] === '' || $payload['jumlah_aktual'] === '' || $payload['lokasi_gudang'] === '') {
             return 'Komoditas, tanggal catat, jumlah aktual, dan lokasi gudang wajib diisi.';
@@ -186,6 +186,13 @@ final class StokHistorisController extends Controller
 
         if (mb_strlen($payload['lokasi_gudang']) > 50) {
             return 'Lokasi gudang maksimal 50 karakter.';
+        }
+
+        // Tanpa pengecekan ini, mencoba menyimpan baris kedua untuk komoditas+tanggal yang sama
+        // menabrak UNIQUE KEY `uniq_komoditas_tanggal` di database dan berakhir sebagai fatal error
+        // PDOException mentah (lengkap dengan path server) alih-alih pesan validasi yang jelas.
+        if (StokHistoris::existsForCommodityDate((int) $payload['id_komoditas'], $payload['waktu_catat'], $exceptId)) {
+            return 'Data stok historis untuk komoditas dan tanggal tersebut sudah ada.';
         }
 
         return null;

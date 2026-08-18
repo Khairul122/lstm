@@ -710,8 +710,6 @@ if (!function_exists('landing_page_theme_assets')) {
         .mascot-card {
             width: 100%;
         }
-            justify-content: center;
-        }
     }
 </style>
 HTML;

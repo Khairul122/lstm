@@ -134,6 +134,19 @@ final class LstmBatchRun
         );
     }
 
+    public static function markFailed(int $batchId, string $notes): void
+    {
+        self::ensureTables();
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare(
+            'UPDATE lstm_batch_runs SET status = :status, notes = :notes WHERE id = :id'
+        );
+        $stmt->bindValue(':status', 'failed');
+        $stmt->bindValue(':notes', $notes);
+        $stmt->bindValue(':id', $batchId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
     public static function createBatch(array $payload): int
     {
         self::ensureTables();

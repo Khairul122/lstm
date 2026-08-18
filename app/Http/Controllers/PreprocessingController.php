@@ -55,11 +55,27 @@ final class PreprocessingController extends Controller
             return;
         }
 
-        $runResult = DataPreprocessingLstm::process([
-            'komoditas' => $form['komoditas'],
-            'sequence_length' => (int) $form['sequence_length'],
-            'train_ratio' => (float) $form['train_ratio'],
-        ]);
+        // Tanpa try/catch ini, error tak terduga (mis. data komoditas yang terlalu sedikit/tidak
+        // wajar) tampil sebagai fatal error PHP mentah lengkap dengan stack trace dan path server
+        // ke pengguna, bukan pesan yang bisa ditindaklanjuti.
+        try {
+            $runResult = DataPreprocessingLstm::process([
+                'komoditas' => $form['komoditas'],
+                'sequence_length' => (int) $form['sequence_length'],
+                'train_ratio' => (float) $form['train_ratio'],
+            ]);
+        } catch (\Throwable $exception) {
+            Session::flash('error', 'Preprocessing gagal: ' . $exception->getMessage());
+            $this->renderPage([
+                'form' => $form,
+                'logs' => [],
+                'runResult' => null,
+                'tableSearch' => trim((string) ($_GET['search'] ?? '')),
+                'summaryPage' => 1,
+                'previewPage' => 1,
+            ]);
+            return;
+        }
 
         Session::flash('success', 'Preprocessing data LSTM selesai dan data berhasil disimpan ke database.');
 
@@ -71,6 +87,13 @@ final class PreprocessingController extends Controller
             'summaryPage' => 1,
             'previewPage' => 1,
         ]);
+    }
+
+    public function resetAll(): void
+    {
+        DataPreprocessingLstm::resetAll();
+        Session::flash('success', 'Semua data preprocessing berhasil dihapus. Jalankan preprocessing ulang untuk membentuk data baru.');
+        $this->redirect('/preprocessing');
     }
 
     public function exportSummary(string $format): void
