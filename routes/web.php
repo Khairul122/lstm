@@ -49,5 +49,5 @@ $router->get('/evaluasi/export/semua/csv', [LstmController::class, 'exportAll'],
 $router->get('/evaluasi/batch/{id}', [LstmController::class, 'batch'], [AuthMiddleware::class]);
 $router->get('/evaluasi/run/{id}', [LstmController::class, 'run'], [AuthMiddleware::class]);
 $router->post('/evaluasi/batch/{id}/delete', [LstmController::class, 'deleteBatch'], [AuthMiddleware::class, CSRFCheckMiddleware::class]);
-$router->post('/save-screenshot', [DashboardController::class, 'saveScreenshot']);
+
 
