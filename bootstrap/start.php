@@ -25,6 +25,11 @@ if (
     $requestUri = $requestUri === '' ? '/' : $requestUri;
 }
 
+if (str_starts_with($requestUri, '/index.php')) {
+    $requestUri = substr($requestUri, 10);
+    $requestUri = $requestUri === '' ? '/' : $requestUri;
+}
+
 $router->dispatch(
     $_SERVER['REQUEST_METHOD'] ?? 'GET',
     $requestUri

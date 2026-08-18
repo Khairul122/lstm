@@ -33,4 +33,35 @@ final class DashboardController extends Controller
             'bestRun' => $bestRun,
         ]);
     }
+
+    public function saveScreenshot(): void
+    {
+        $name = (string) ($_POST['name'] ?? '');
+        $imgData = (string) ($_POST['image'] ?? '');
+        
+        if ($name === '' || $imgData === '') {
+            $json = file_get_contents('php://input');
+            $data = json_decode($json, true);
+            $name = (string) ($data['name'] ?? '');
+            $imgData = (string) ($data['image'] ?? '');
+        }
+        
+        if ($name !== '' && $imgData !== '') {
+            $name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
+            $dir = __DIR__ . '/../../screenshoot';
+            if (!is_dir($dir)) {
+                mkdir($dir, 0777, true);
+            }
+            if (str_starts_with($imgData, 'data:image')) {
+                $parts = explode(',', $imgData);
+                $imgData = $parts[1] ?? '';
+            }
+            $decoded = base64_decode($imgData);
+            file_put_contents($dir . '/' . $name, $decoded);
+            echo "SAVED_SUCCESS_" . e($name);
+            exit;
+        }
+        echo "ERROR_MISSING_DATA";
+        exit;
+    }
 }
