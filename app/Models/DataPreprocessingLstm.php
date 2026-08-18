@@ -59,6 +59,12 @@ final class DataPreprocessingLstm
         try {
             foreach ($grouped as $commodityName => $rows) {
                 $prepared = self::prepareCommodityRows($commodityName, $rows, $sequenceLength, $trainRatio);
+
+                // Setiap run selalu meregenerasi SELURUH rentang tanggal komoditas ini dari nol, jadi
+                // baris lama untuk komoditas ini dibuang dulu sebelum insert ulang. Tanpa ini, baris
+                // yang tanggalnya sudah tidak ada di data_stok_historis (mis. setelah dihapus/diedit)
+                // tetap nyangkut selamanya di data_preprocessing_lstm dan ikut terpakai saat training.
+                self::deleteCommodityRows($commodityName);
                 self::persistRows($prepared['rows']);
 
                 $savedRows += count($prepared['rows']);
@@ -595,6 +601,14 @@ final class DataPreprocessingLstm
                 'tanggal_akhir' => $prepared[count($prepared) - 1]['format_waktu'],
             ],
         ];
+    }
+
+    private static function deleteCommodityRows(string $commodityName): void
+    {
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare('DELETE FROM data_preprocessing_lstm WHERE komoditas = :komoditas');
+        $stmt->bindValue(':komoditas', $commodityName, PDO::PARAM_STR);
+        $stmt->execute();
     }
 
     private static function persistRows(array $rows): void
