@@ -425,17 +425,12 @@ final class DataPreprocessingLstm
     private static function prepareCommodityRows(string $commodityName, array $rows, int $sequenceLength, float $trainRatio): array
     {
         $mapped = [];
-        $rawValues = [];
 
         foreach ($rows as $row) {
             $mapped[$row['waktu_catat']] = [
                 'tanggal_asli' => (string) $row['waktu_catat'],
                 'stok_mentah' => $row['stok_mentah'] !== null ? (float) $row['stok_mentah'] : null,
             ];
-
-            if ($row['stok_mentah'] !== null) {
-                $rawValues[] = (float) $row['stok_mentah'];
-            }
         }
 
         if ($mapped === []) {
@@ -451,34 +446,57 @@ final class DataPreprocessingLstm
         $endDate = new DateTimeImmutable((string) end($dates));
         $period = new DatePeriod($startDate, new DateInterval('P1D'), $endDate->modify('+1 day'));
 
-        sort($rawValues);
-        $q1 = self::quantile($rawValues, 0.25);
-        $q3 = self::quantile($rawValues, 0.75);
+        // Bentuk kerangka baris untuk seluruh rentang tanggal terlebih dahulu, sebelum status
+        // anomali/statistik apa pun dihitung.
+        $skeleton = [];
+        foreach ($period as $date) {
+            $dateKey = $date->format('Y-m-d');
+            $skeleton[] = [
+                'tanggal_asli' => $mapped[$dateKey]['tanggal_asli'] ?? $dateKey,
+                'format_waktu' => $dateKey,
+                'komoditas' => $commodityName,
+                'stok_mentah' => $mapped[$dateKey]['stok_mentah'] ?? null,
+            ];
+        }
+
+        // Titik potong latih/uji dihitung lebih dulu dari jumlah baris saja (tidak bergantung pada
+        // statistik apa pun), sehingga seluruh statistik di bawah ini bisa dibatasi hanya pada porsi
+        // data latih.
+        $splitIndex = (int) floor(count($skeleton) * $trainRatio);
+
+        // PENCEGAHAN DATA LEAKAGE: Q1/Q3/IQR untuk deteksi outlier dihitung HANYA dari nilai mentah
+        // pada porsi data latih (indeks < $splitIndex), bukan dari seluruh data historis. Jika
+        // dihitung dari seluruh data (termasuk periode uji), batas kewajaran outlier akan
+        // "mengetahui" sebaran nilai pada periode uji sebelum model sempat dilatih, sehingga
+        // parameter praproses ikut bocor dari masa depan.
+        $trainRawValues = [];
+        foreach (array_slice($skeleton, 0, $splitIndex) as $item) {
+            if ($item['stok_mentah'] !== null) {
+                $trainRawValues[] = (float) $item['stok_mentah'];
+            }
+        }
+        sort($trainRawValues);
+        $q1 = self::quantile($trainRawValues, 0.25);
+        $q3 = self::quantile($trainRawValues, 0.75);
         $iqr = $q3 - $q1;
         $lowerBound = $q1 - (1.5 * $iqr);
         $upperBound = $q3 + (1.5 * $iqr);
-        $median = self::quantile($rawValues, 0.5);
+        $median = self::quantile($trainRawValues, 0.5);
 
         $prepared = [];
 
-        foreach ($period as $date) {
-            $dateKey = $date->format('Y-m-d');
-            $rawStock = $mapped[$dateKey]['stok_mentah'] ?? null;
+        foreach ($skeleton as $item) {
+            $rawStock = $item['stok_mentah'];
             $status = 'Normal';
 
-            if (!array_key_exists($dateKey, $mapped) || $rawStock === null) {
+            if ($rawStock === null) {
                 $status = 'Missing Value';
             } elseif ($rawStock < $lowerBound || $rawStock > $upperBound) {
                 $status = 'Outlier';
             }
 
-            $prepared[] = [
-                'tanggal_asli' => $mapped[$dateKey]['tanggal_asli'] ?? $dateKey,
-                'format_waktu' => $dateKey,
-                'komoditas' => $commodityName,
-                'stok_mentah' => $rawStock,
-                'status_anomali' => $status,
-            ];
+            $item['status_anomali'] = $status;
+            $prepared[] = $item;
         }
 
         foreach ($prepared as $index => $item) {
@@ -490,9 +508,17 @@ final class DataPreprocessingLstm
             $prepared[$index]['stok_bersih'] = self::replacementValue($prepared, $index, $median);
         }
 
-        $cleanValues = array_map(static fn (array $item): float => (float) $item['stok_bersih'], $prepared);
-        $minClean = min($cleanValues);
-        $maxClean = max($cleanValues);
+        // PENCEGAHAN DATA LEAKAGE: parameter normalisasi Min-Max (xmin, xmax) juga HANYA dihitung
+        // dari stok_bersih pada porsi data latih, lalu parameter yang sama (beku/frozen) dipakai
+        // untuk menormalisasi seluruh baris termasuk data uji. Ini mengikuti prinsip fit-on-train,
+        // transform-on-all yang wajib pada validasi deret waktu, sehingga skala normalisasi yang
+        // dipelajari model tidak "mengintip" rentang nilai pada periode uji.
+        $trainCleanValues = array_map(
+            static fn (array $item): float => (float) $item['stok_bersih'],
+            array_slice($prepared, 0, $splitIndex)
+        );
+        $minClean = min($trainCleanValues);
+        $maxClean = max($trainCleanValues);
         $range = $maxClean - $minClean;
 
         foreach ($prepared as $index => $item) {
@@ -501,7 +527,6 @@ final class DataPreprocessingLstm
         }
 
         $normalizedSeries = array_map(static fn (array $item): float => (float) $item['normalisasi_minmax'], $prepared);
-        $splitIndex = (int) floor(count($prepared) * $trainRatio);
 
         foreach ($prepared as $index => $item) {
             $sequence = self::buildSequence($normalizedSeries, $index, $sequenceLength);

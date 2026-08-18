@@ -93,7 +93,8 @@ final class LstmController extends Controller
         ]);
 
         $scriptPath = realpath('database/train_lstm_batch.py');
-        $command = sprintf('start /B python "%s" %d > NUL 2>&1', $scriptPath, $batchId);
+        $pythonBin = getenv('LSTM_PYTHON_BIN') ?: 'D:/Alternatif_D/laragon/bin/python/python-3.13/python.exe';
+        $command = sprintf('start /B "" "%s" "%s" %d > NUL 2>&1', $pythonBin, $scriptPath, $batchId);
         pclose(popen($command, "r"));
 
         Session::flash('flash_popup', [
